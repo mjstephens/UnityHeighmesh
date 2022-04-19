@@ -105,12 +105,12 @@ namespace Stephens.Heightmesh
                 
                 if (SinWaveCount > 0)
                 {
-                    vertexPosV3.y += SolveSinWaves(vertexPosV3, MeshPosition, SinWaveData, SinWaveCount, Time);
+                    vertexPosV3.y += SolveSinWaves(vertexPosV3, MeshPosition, SinWaveData, SinWaveCount);
                 }
 
                 if (GerstnerWaveCount > 0)
                 {
-                    vertexPosV3 = SolveGerstnerWaves(vertexPosV3, MeshPosition, GerstnerWaveData, GerstnerWaveCount, Time);
+                    vertexPosV3 = SolveGerstnerWaves(vertexPosV3, MeshPosition, GerstnerWaveData, GerstnerWaveCount);
                 }
                 
                 if (RippleCount > 0)
@@ -125,8 +125,7 @@ namespace Stephens.Heightmesh
                 Vector3 vertex, 
                 Vector3 meshPosition,
                 NativeArray<DataWaveSin> waveData, 
-                int count, 
-                float time)
+                int count)
             {
                 float y = vertex.y;
                 for(int i = 0; i < count; i++)
@@ -137,7 +136,7 @@ namespace Stephens.Heightmesh
                         vertex += meshPosition;
                     }
                     
-                    y += CalcSinWave(vertex, waveData[i], time);
+                    y += CalcSinWave(vertex, waveData[i]);
                 }
 
                 return y;
@@ -148,8 +147,7 @@ namespace Stephens.Heightmesh
             Vector3 vertex,
             Vector3 meshPosition,
             NativeArray<DataWaveGerstner> waveData,
-            int count,
-            float time)
+            int count)
         {
             float waveCountMulti = 1f / count;
             for (int i = 0; i < count; i++)
@@ -161,7 +159,7 @@ namespace Stephens.Heightmesh
                     omni = vertex;
                 }
                 
-                vertex += CalcGerstnerWave(pos, omni, waveData[i], waveCountMulti, time);
+                vertex += CalcGerstnerWave(pos, omni, waveData[i], waveCountMulti);
             }
             
             return vertex;

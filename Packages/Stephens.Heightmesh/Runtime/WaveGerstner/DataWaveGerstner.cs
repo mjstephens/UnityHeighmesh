@@ -11,6 +11,7 @@ namespace Stephens.Heightmesh
         internal bool WorldAnchored;
 
         // Runtime calculated
+        internal float Offset;
         internal float Qi;
         internal float Wavelength;
         internal float WSpeed;

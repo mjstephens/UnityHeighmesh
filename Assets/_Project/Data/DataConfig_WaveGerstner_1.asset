@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f96da85fd84e278030d135746facb0, type: 3}
   m_Name: DataConfig_WaveGerstner_1
   m_EditorClassIdentifier: 
-  Amplitude: 1.26
-  Direction: 20.67
-  Speed: 0.8
-  Wavelength: 15.22
-  Origin: {x: 20, y: 0, z: -10.76}
-  OmniDirectional: 1
+  Amplitude: 0.5
+  Wavelength: 24.26
+  Direction: 141.63
+  Speed: 3.92
   WorldAnchored: 1
+  Origin: {x: 20, y: 0, z: -16.36}
+  OmniDirectional: 0

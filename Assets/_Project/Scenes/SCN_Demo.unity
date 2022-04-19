@@ -483,53 +483,7 @@ Transform:
   m_Father: {fileID: 1467176219}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1467176217
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1467176219}
-  - component: {fileID: 1467176218}
-  m_Layer: 0
-  m_Name: Rippler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1467176218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1467176217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e3af73d4c5f54ef4b996979aa48c343, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 300
---- !u!4 &1467176219
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1467176217}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 647841045}
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1705982843
+--- !u!1001 &786288109
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -542,12 +496,6 @@ PrefabInstance:
       propertyPath: _testCPU
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
-        type: 3}
-      propertyPath: _configData
-      value: 
-      objectReference: {fileID: 11400000, guid: 577eb83e9a9c04030a36317a3feda91d,
-        type: 2}
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
       propertyPath: _rippleStrength
@@ -604,7 +552,7 @@ PrefabInstance:
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
       propertyPath: _dataGerstnerWaves.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
@@ -616,7 +564,55 @@ PrefabInstance:
         type: 3}
       propertyPath: _dataGerstnerWaves.Array.data[1]
       value: 
-      objectReference: {fileID: 11400000, guid: 67a762213e731445c97143db49c76243,
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[4]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[5]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[6]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[7]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[8]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[9]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
         type: 2}
     - target: {fileID: 3843907450147548041, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
@@ -636,7 +632,7 @@ PrefabInstance:
     - target: {fileID: 3843907450147548041, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 51
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3843907450147548041, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
@@ -681,11 +677,57 @@ PrefabInstance:
     - target: {fileID: 3843907450147548045, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e, type: 3}
+--- !u!1 &1467176217
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1467176219}
+  - component: {fileID: 1467176218}
+  m_Layer: 0
+  m_Name: Rippler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1467176218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1467176217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e3af73d4c5f54ef4b996979aa48c343, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 300
+--- !u!4 &1467176219
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1467176217}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 647841045}
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2001594923
 GameObject:
   m_ObjectHideFlags: 0
@@ -838,7 +880,7 @@ PrefabInstance:
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
       propertyPath: _dataGerstnerWaves.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
@@ -850,7 +892,55 @@ PrefabInstance:
         type: 3}
       propertyPath: _dataGerstnerWaves.Array.data[1]
       value: 
-      objectReference: {fileID: 11400000, guid: 67a762213e731445c97143db49c76243,
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[4]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[5]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[6]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[7]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[8]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
+        type: 2}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataGerstnerWaves.Array.data[9]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7,
         type: 2}
     - target: {fileID: 3843907450147548041, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}

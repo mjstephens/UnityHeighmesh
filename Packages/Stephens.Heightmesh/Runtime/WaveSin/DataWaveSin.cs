@@ -8,7 +8,10 @@ namespace Stephens.Heightmesh
         internal Quaternion Direction;
         internal float Speed;
         internal float Amplitude;
-        internal float Strength;
+        internal float Wavelength;
         internal bool WorldAnchored;
+
+        internal float Offset;
+        internal float Time;
     }
 }

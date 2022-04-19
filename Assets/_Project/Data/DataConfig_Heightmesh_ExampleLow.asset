@@ -17,5 +17,5 @@ MonoBehaviour:
   UVScale: 100
   SurfaceActualWidth: 50
   SurfaceActualLength: 50
-  SurfaceWidthPoints: 50
-  SurfaceLengthPoints: 50
+  SurfaceWidthPoints: 30
+  SurfaceLengthPoints: 30

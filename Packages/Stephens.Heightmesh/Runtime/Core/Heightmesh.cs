@@ -34,6 +34,8 @@ namespace Stephens.Heightmesh
         internal Mesh Mesh { get; set; }
         private float _localTime;
         private readonly List<DataHeightwaveRipple> _dataRipples = new List<DataHeightwaveRipple>();
+        private readonly List<DataWaveSin> _dataSin = new List<DataWaveSin>();
+        private readonly List<DataWaveGerstner> _dataGerstner = new List<DataWaveGerstner>();
 
         #endregion VARIABLES
         
@@ -42,7 +44,30 @@ namespace Stephens.Heightmesh
 
         private void Awake()
         {
+	        foreach (DataConfigWaveSin data in _dataSinWaves)
+	        {
+		        _dataSin.Add(new DataWaveSin()
+		        {
+			        Direction = Quaternion.Euler(Vector3.up * data.Direction),
+			        Speed = data.Speed,
+			        Amplitude = data.Amplitude,
+			        Wavelength = data.Wavelength,
+			        Offset = 0,
+			        WorldAnchored = data.WorldAnchored
+		        });
+	        }
 	        
+	        foreach (DataConfigWaveGerstner data in _dataGerstnerWaves)
+	        {
+		        _dataGerstner.Add(new DataWaveGerstner()
+		        {
+			        Origin = data.WorldAnchored ? transform.InverseTransformPoint(data.Origin) : data.Origin,
+			        Amplitude = data.Amplitude,
+			        OmniDirectional = data.OmniDirectional,
+			        WorldAnchored = data.WorldAnchored,
+			        Offset = 0
+		        });
+	        }
         }
         
         private Solver ResolveSolver()
@@ -85,52 +110,53 @@ namespace Stephens.Heightmesh
         {
 	        _localTime += Time.deltaTime;
 	        UpdateWaveSourcePositions(Time.deltaTime);
+	        GetDataSinWaves(_dataSinWaves, Time.deltaTime);
+	        GetDataGerstnerWaves(_dataGerstnerWaves, Time.deltaTime);
+
 	        _solver?.Solve(
 				transform.position,
 		        _originalVertices, 
-		        _dataRipples, 
-		        GetDataSinWaves(_dataSinWaves),
-		        GetDataGerstnerWaves(_dataGerstnerWaves, transform),
+		        _dataRipples,
+				_dataSin.ToArray(),
+				_dataGerstner.ToArray(),
 		        _localTime);
         }
 
-        private static DataWaveSin[] GetDataSinWaves(DataConfigWaveSin[] data)
+        private void GetDataSinWaves(DataConfigWaveSin[] data, float delta)
         {
-	        DataWaveSin[] dataOut = new DataWaveSin[data.Length];
 	        for (int i = 0; i < data.Length; i++)
 	        {
-		        dataOut[i] = new DataWaveSin()
+		        _dataSin[i] = new DataWaveSin()
 		        {
 					Direction = Quaternion.Euler(Vector3.up * data[i].Direction),
 					Speed = data[i].Speed,
 					Amplitude = data[i].Amplitude,
-					Strength = data[i].Strength,
-					WorldAnchored = data[i].WorldAnchored
+					Wavelength = data[i].Wavelength,
+					Offset = GetWaveOffset(delta, data[i].Speed, _dataSin[i].Offset),
+					WorldAnchored = data[i].WorldAnchored,
 		        };
 	        }
-
-	        return dataOut;
         }
-        
-        private static DataWaveGerstner[] GetDataGerstnerWaves(DataConfigWaveGerstner[] data, Transform transform)
+
+        private void GetDataGerstnerWaves(DataConfigWaveGerstner[] data, float delta)
         {
-	        DataWaveGerstner[] dataOut = new DataWaveGerstner[data.Length];
 	        for (int i = 0; i < data.Length; i++)
 	        {
 		        // Precalculate data to avoid re-calculation inside vertex job
 		        float wavelength = 6.28318f / data[i].Wavelength;					// 2pi over wavelength(hardcoded)
-		        float wSpeed = Mathf.Sqrt(9.8f * wavelength) * data[i].Speed;		// frequency of the wave based off wavelength
+		        float wSpeed = Mathf.Sqrt(9.8f * wavelength) + data[i].Speed;	// frequency of the wave based off wavelength
 		        float qi = 0.8f / (data[i].Amplitude * wavelength * data.Length);	// 0.8 = peak value, 1 is the sharpest peaks
 		        float direction = Mathf.Deg2Rad * data[i].Direction;
 		        Vector3 windDirInput =
 			        new Vector3(Mathf.Sin(direction), 0, Mathf.Cos(direction)) * (1 - (data[i].OmniDirectional ? 1 : 0));
 		        
-		        dataOut[i] = new DataWaveGerstner()
+		        _dataGerstner[i] = new DataWaveGerstner()
 		        {
 			        Origin = data[i].WorldAnchored ? transform.InverseTransformPoint(data[i].Origin) : data[i].Origin,
 			        Amplitude = data[i].Amplitude,
 			        OmniDirectional = data[i].OmniDirectional,
 			        WorldAnchored = data[i].WorldAnchored,
+			        Offset = GetWaveOffset(delta, data[i].Speed, _dataGerstner[i].Offset),
 			        
 			        Wavelength = wavelength,
 			        WSpeed = wSpeed,
@@ -138,8 +164,21 @@ namespace Stephens.Heightmesh
 			        WindDirectionInput = windDirInput
 		        };
 	        }
-
-	        return dataOut;
+        }
+        
+        private float GetWaveOffset(float delta, float speed, float previousOffset)
+        {
+	        float offset = previousOffset + (delta * speed);
+	        if (offset > _configData.SurfaceActualWidth)
+	        {
+		        offset -= _configData.SurfaceActualWidth;
+	        }
+	        else if (offset < -_configData.SurfaceActualWidth)
+	        {
+		        offset += _configData.SurfaceActualWidth;
+	        }
+	        
+	        return offset;
         }
         
         #endregion UPDATE

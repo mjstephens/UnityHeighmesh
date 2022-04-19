@@ -56,19 +56,17 @@ namespace Stephens.Heightmesh
 
         protected static float CalcSinWave(
             Vector3 vertex, 
-            DataWaveSin wave, 
-            float time)
+            DataWaveSin wave)
         {
             Vector3 dir = wave.Direction * vertex;
-            return Mathf.Sin(time * wave.Speed + (dir.z * wave.Amplitude)) * wave.Strength;
+            return Mathf.Sin((dir.z * wave.Wavelength) + wave.Offset) * wave.Amplitude;
         }
         
         protected static Vector3 CalcGerstnerWave(
             Vector3 vertex, 
             Vector3 omni,
             DataWaveGerstner wave, 
-            float countMulti, 
-            float time)
+            float countMulti)
         {
             float amplitude = wave.Amplitude;
             Vector3 omniPos = wave.Origin;
@@ -81,7 +79,7 @@ namespace Stephens.Heightmesh
             float dir = Vector3.Dot(windDir, omni - omniPos * omniDir);
 
             ////////////////////////////position output calculations/////////////////////////
-            float calc = dir * wave.Wavelength + -time * wave.WSpeed; // the wave calculation
+            float calc = dir * wave.Wavelength - wave.Offset; // the wave calculation
             float cosCalc = Mathf.Cos(calc); // cosine version(used for horizontal undulation)
             float sinCalc = Mathf.Sin(calc); // sin version(used for vertical undulation)
 

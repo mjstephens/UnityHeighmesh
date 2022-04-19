@@ -49,12 +49,12 @@ namespace Stephens.Heightmesh
             {
                 if (doSolveSin)
                 {
-                    _verticesCopy[i].y += SolveSinWaves(_verticesCopy[i], meshPosition, dataWaveSin, sinCount, time);
+                    _verticesCopy[i].y += SolveSinWaves(_verticesCopy[i], meshPosition, dataWaveSin, sinCount);
                 }
 
                 if (doSolveGerstner)
                 {
-                    _verticesCopy[i] = SolveGerstnerWaves(_verticesCopy[i], meshPosition, dataWaveGerstner, gerstnerCount, time);
+                    _verticesCopy[i] = SolveGerstnerWaves(_verticesCopy[i], meshPosition, dataWaveGerstner, gerstnerCount);
                 }
                 
                 if (doSolveRipples)
@@ -72,8 +72,7 @@ namespace Stephens.Heightmesh
             Vector3 vertex, 
             Vector3 meshPosition,
             DataWaveSin[] waveData, 
-            int count, 
-            float time)
+            int count)
         {
             float y = vertex.y;
             for (int i = 0; i < count; i++)
@@ -84,7 +83,7 @@ namespace Stephens.Heightmesh
                     vertex += meshPosition;
                 }
                 
-                y += CalcSinWave(vertex, waveData[i], time);
+                y += CalcSinWave(vertex, waveData[i]);
             }
 
             return y;
@@ -94,8 +93,7 @@ namespace Stephens.Heightmesh
             Vector3 vertex,
             Vector3 meshPosition,
             DataWaveGerstner[] waveData,
-            int count,
-            float time)
+            int count)
         {
             float waveCountMulti = 1f / count;
             for (int i = 0; i < count; i++)
@@ -107,7 +105,7 @@ namespace Stephens.Heightmesh
                     omni = vertex;
                 }
                 
-                vertex += CalcGerstnerWave(pos, omni, waveData[i], waveCountMulti, time);
+                vertex += CalcGerstnerWave(pos, omni, waveData[i], waveCountMulti);
             }
             
             return vertex;
