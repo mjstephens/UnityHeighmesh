@@ -552,7 +552,7 @@ PrefabInstance:
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
       propertyPath: _dataGerstnerWaves.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
@@ -880,7 +880,7 @@ PrefabInstance:
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
       propertyPath: _dataGerstnerWaves.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}

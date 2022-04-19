@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0dceeb41fb84a748ca5b28c2eb4c73d, type: 3}
   m_Name: DataConfig_WaveSin_1
   m_EditorClassIdentifier: 
-  Amplitude: 0.45
-  Wavelength: 0.4
-  Direction: 1.48
-  Speed: 5
+  Amplitude: 0.7
+  Wavelength: 0.33
+  Direction: 22.7
+  Speed: 8.73
   WorldAnchored: 1

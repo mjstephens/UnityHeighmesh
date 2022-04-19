@@ -14,7 +14,6 @@ namespace Stephens.Heightmesh
         internal float Offset;
         internal float Qi;
         internal float Wavelength;
-        internal float WSpeed;
         internal Vector3 WindDirectionInput;
     }
 }

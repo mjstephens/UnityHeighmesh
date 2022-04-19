@@ -49,7 +49,6 @@ namespace Stephens.Heightmesh
 		        _dataSin.Add(new DataWaveSin()
 		        {
 			        Direction = Quaternion.Euler(Vector3.up * data.Direction),
-			        Speed = data.Speed,
 			        Amplitude = data.Amplitude,
 			        Wavelength = data.Wavelength,
 			        Offset = 0,
@@ -129,7 +128,6 @@ namespace Stephens.Heightmesh
 		        _dataSin[i] = new DataWaveSin()
 		        {
 					Direction = Quaternion.Euler(Vector3.up * data[i].Direction),
-					Speed = data[i].Speed,
 					Amplitude = data[i].Amplitude,
 					Wavelength = data[i].Wavelength,
 					Offset = GetWaveOffset(delta, data[i].Speed, _dataSin[i].Offset),
@@ -144,7 +142,6 @@ namespace Stephens.Heightmesh
 	        {
 		        // Precalculate data to avoid re-calculation inside vertex job
 		        float wavelength = 6.28318f / data[i].Wavelength;					// 2pi over wavelength(hardcoded)
-		        float wSpeed = Mathf.Sqrt(9.8f * wavelength) + data[i].Speed;	// frequency of the wave based off wavelength
 		        float qi = 0.8f / (data[i].Amplitude * wavelength * data.Length);	// 0.8 = peak value, 1 is the sharpest peaks
 		        float direction = Mathf.Deg2Rad * data[i].Direction;
 		        Vector3 windDirInput =
@@ -159,7 +156,6 @@ namespace Stephens.Heightmesh
 			        Offset = GetWaveOffset(delta, data[i].Speed, _dataGerstner[i].Offset),
 			        
 			        Wavelength = wavelength,
-			        WSpeed = wSpeed,
 			        Qi = qi,
 			        WindDirectionInput = windDirInput
 		        };
