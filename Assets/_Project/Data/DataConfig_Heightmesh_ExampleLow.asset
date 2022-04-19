@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6e51458c54f46e0b9fad9df72cd249b, type: 3}
+  m_Name: DataConfig_Heightmesh_ExampleLow
+  m_EditorClassIdentifier: 
+  Mode: 0
+  UpdateRateRipples: 0.1
+  UVScale: 100
+  SurfaceActualWidth: 50
+  SurfaceActualLength: 50
+  SurfaceWidthPoints: 50
+  SurfaceLengthPoints: 50
