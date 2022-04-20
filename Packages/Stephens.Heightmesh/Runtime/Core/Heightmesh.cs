@@ -20,9 +20,15 @@ namespace Stephens.Heightmesh
         [SerializeField] private DataConfigWaveSin[] _dataSinWaves;
         [SerializeField] private DataConfigWaveGerstner[] _dataGerstnerWaves;
         [SerializeField] private DataConfigRipple _dataConfigRipples;
+        [SerializeField] private DataConfigNoise[] _dataConfigNoise;
 
         [Header("Ripple Waves")]
         [SerializeField] private Transform[] _waveSources;
+        
+        [Header("Runtime")]
+        [SerializeField] private float _type;
+
+        
 
 
         private Solver _solver;
@@ -36,6 +42,7 @@ namespace Stephens.Heightmesh
         private readonly List<DataHeightwaveRipple> _dataRipples = new List<DataHeightwaveRipple>();
         private readonly List<DataWaveSin> _dataSin = new List<DataWaveSin>();
         private readonly List<DataWaveGerstner> _dataGerstner = new List<DataWaveGerstner>();
+        private readonly List<DataNoise> _dataNoise = new List<DataNoise>();
 
         #endregion VARIABLES
         
@@ -48,6 +55,7 @@ namespace Stephens.Heightmesh
 	        {
 		        _dataSin.Add(new DataWaveSin()
 		        {
+			        Opacity = data.Opacity,
 			        Direction = Quaternion.Euler(Vector3.up * data.Direction),
 			        Amplitude = data.Amplitude,
 			        Wavelength = data.Wavelength,
@@ -65,6 +73,15 @@ namespace Stephens.Heightmesh
 			        OmniDirectional = data.OmniDirectional,
 			        WorldAnchored = data.WorldAnchored,
 			        Offset = 0
+		        });
+	        }
+
+	        foreach (DataConfigNoise noise in _dataConfigNoise)
+	        {
+		        _dataNoise.Add(new DataNoise()
+		        {
+			        Type = noise.Type,
+			        Strength = noise.Strength
 		        });
 	        }
         }
@@ -111,13 +128,16 @@ namespace Stephens.Heightmesh
 	        UpdateWaveSourcePositions(Time.deltaTime);
 	        GetDataSinWaves(_dataSinWaves, Time.deltaTime);
 	        GetDataGerstnerWaves(_dataGerstnerWaves, Time.deltaTime);
+	        GetDataNoise(_dataConfigNoise, Time.deltaTime);
 
 	        _solver?.Solve(
 				transform.position,
 		        _originalVertices, 
+				_configData.SurfaceActualWidth,
 		        _dataRipples,
 				_dataSin.ToArray(),
 				_dataGerstner.ToArray(),
+				_dataNoise.ToArray(),
 		        _localTime);
         }
 
@@ -127,6 +147,7 @@ namespace Stephens.Heightmesh
 	        {
 		        _dataSin[i] = new DataWaveSin()
 		        {
+			        Opacity = data[i].Opacity,
 					Direction = Quaternion.Euler(Vector3.up * data[i].Direction),
 					Amplitude = data[i].Amplitude,
 					Wavelength = data[i].Wavelength,
@@ -174,6 +195,27 @@ namespace Stephens.Heightmesh
 		        offset += _configData.SurfaceActualWidth;
 	        }
 	        
+	        return offset;
+        }
+
+        private void GetDataNoise(DataConfigNoise[] data, float delta)
+        {
+	        for (int i = 0; i < data.Length; i++)
+	        {
+		        _dataNoise[i] = new DataNoise()
+		        {
+					Type = data[i].Type,
+					Strength = data[i].Strength,
+					Spread = data[i].Spread,
+					Offset = GetNoiseOffset(delta, data[i].Speed, _dataNoise[i].Offset)
+		        };
+	        }
+        }
+
+        private Vector2 GetNoiseOffset(float delta, Vector2 speed, Vector2 previousOffset)
+        {
+	        Vector2 offset = previousOffset + (delta * speed);
+
 	        return offset;
         }
         

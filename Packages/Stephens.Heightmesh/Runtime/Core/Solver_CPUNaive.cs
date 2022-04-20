@@ -28,15 +28,18 @@ namespace Stephens.Heightmesh
         internal override void Solve(
             Vector3 meshPosition,
             Vector3[] originalVertices, 
+            float meshWidth,
             List<DataHeightwaveRipple> dataRipples,
             DataWaveSin[] dataWaveSin,
             DataWaveGerstner[] dataWaveGerstner,
+            DataNoise[] dataNoise,
             float time)
         {
             int ripplesCount = dataRipples.Count;
             int sinCount = dataWaveSin.Length;
-            int gerstnerCount = dataWaveGerstner.Length;
-
+            int gerstnerCount = dataWaveGerstner.Length;          
+            int noiseCount = dataNoise.Length;
+            
             for (int i = 0; i < originalVertices.Length; i++)
             {
                 _verticesCopy[i] = originalVertices[i];
@@ -45,16 +48,22 @@ namespace Stephens.Heightmesh
             bool doSolveRipples = ripplesCount > 0;
             bool doSolveSin = sinCount > 0;
             bool doSolveGerstner = gerstnerCount > 0;
+            bool doSolveNoise = noiseCount > 0;
             for (int i = 0; i < _verticesCopy.Length; i++)
             {
                 if (doSolveSin)
                 {
                     _verticesCopy[i].y += SolveSinWaves(_verticesCopy[i], meshPosition, dataWaveSin, sinCount);
                 }
-
+                
                 if (doSolveGerstner)
                 {
                     _verticesCopy[i] = SolveGerstnerWaves(_verticesCopy[i], meshPosition, dataWaveGerstner, gerstnerCount);
+                }
+
+                if (doSolveNoise)
+                {
+                    _verticesCopy[i].y += SolveNoise(_verticesCopy[i], meshPosition, dataNoise);
                 }
                 
                 if (doSolveRipples)
@@ -110,7 +119,24 @@ namespace Stephens.Heightmesh
             
             return vertex;
         }
-        
+
+        private static float SolveNoise(
+            Vector3 vertex, 
+            Vector3 meshPosition,
+            DataNoise[] data)
+        {
+            float y = vertex.y;
+            foreach (DataNoise noise in data)
+            {
+                y += Mathf.PerlinNoise(
+                         (vertex.x + meshPosition.x - noise.Offset.x) * noise.Spread,
+                         (vertex.z + meshPosition.z - noise.Offset.y) * noise.Spread) 
+                     * noise.Strength;
+            }
+
+            return y;
+        }
+
         private static float SolveRippleWaves(
             Vector3 vertex, 
             List<DataHeightwaveRipple> dataRipples, 

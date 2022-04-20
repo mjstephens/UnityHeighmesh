@@ -27,39 +27,19 @@ namespace Stephens.Heightmesh
         internal abstract void Solve(
             Vector3 meshPosition,
             Vector3[] originalVertices,
+            float meshWidth,
             List<DataHeightwaveRipple> dataRipples,
             DataWaveSin[] dataWaveSin,
             DataWaveGerstner[] dataWaveGerstner,
+            DataNoise[] dataNoise,
             float time);
-
-        protected static float CalcRipples(
-            Vector2 vertex, 
-            DataHeightwaveRipple ripple, 
-            float time)
-        {
-            float dist =  Vector2.Distance (vertex, ripple.Position);
-            if (dist > ripple.Distance)
-                return 0;
-		      
-            float strength = Heightmesh.MapValue(
-                dist, 
-                0f, 
-                ripple.Distance,
-                ripple.LifetimeRemaining, 0f);
-            if (strength > 0)
-            {
-                return Mathf.Sin(dist - (time * ripple.Speed)) * strength * ripple.Strength;
-            }
-
-            return 0;
-        }
 
         protected static float CalcSinWave(
             Vector3 vertex, 
             DataWaveSin wave)
         {
             Vector3 dir = wave.Direction * vertex;
-            return Mathf.Sin((dir.z * wave.Wavelength) + wave.Offset) * wave.Amplitude;
+            return (Mathf.Sin((dir.z * wave.Wavelength) + wave.Offset) * wave.Amplitude) * wave.Opacity;
         }
         
         protected static Vector3 CalcGerstnerWave(
@@ -89,6 +69,28 @@ namespace Stephens.Heightmesh
             vertex.y = sinCalc * amplitude * countMulti; // the height is divided by the number of waves 
 
             return vertex;
+        }
+        
+        protected static float CalcRipples(
+            Vector2 vertex, 
+            DataHeightwaveRipple ripple, 
+            float time)
+        {
+            float dist =  Vector2.Distance (vertex, ripple.Position);
+            if (dist > ripple.Distance)
+                return 0;
+		      
+            float strength = Heightmesh.MapValue(
+                dist, 
+                0f, 
+                ripple.Distance,
+                ripple.LifetimeRemaining, 0f);
+            if (strength > 0)
+            {
+                return Mathf.Sin(dist - (time * ripple.Speed)) * strength * ripple.Strength;
+            }
+
+            return 0;
         }
 
         #endregion SOLVE

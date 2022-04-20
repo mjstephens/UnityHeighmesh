@@ -5,6 +5,7 @@ namespace Stephens.Heightmesh
 {
     public struct DataWaveSin
     {
+        internal float Opacity;
         internal Quaternion Direction;
         internal float Amplitude;
         internal float Wavelength;

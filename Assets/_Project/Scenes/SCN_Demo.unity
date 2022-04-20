@@ -539,6 +539,11 @@ PrefabInstance:
       objectReference: {fileID: 647841045}
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
+      propertyPath: _dataConfigNoise.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
       propertyPath: _dataSinWaves.Array.data[0]
       value: 
       objectReference: {fileID: 11400000, guid: 65609f6671d0b489db5a9b3c7e2ebdd4,
@@ -552,8 +557,14 @@ PrefabInstance:
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
       propertyPath: _dataGerstnerWaves.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataConfigNoise.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 268d39d5397ff47b8a53f37062bf28bc,
+        type: 2}
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
       propertyPath: _dataGerstnerWaves.Array.data[0]
@@ -867,6 +878,11 @@ PrefabInstance:
       objectReference: {fileID: 647841045}
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
+      propertyPath: _dataConfigNoise.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
       propertyPath: _dataSinWaves.Array.data[0]
       value: 
       objectReference: {fileID: 11400000, guid: 65609f6671d0b489db5a9b3c7e2ebdd4,
@@ -880,8 +896,14 @@ PrefabInstance:
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
       propertyPath: _dataGerstnerWaves.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
+        type: 3}
+      propertyPath: _dataConfigNoise.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 268d39d5397ff47b8a53f37062bf28bc,
+        type: 2}
     - target: {fileID: 3843907450147548040, guid: 3a46e0c2ce52d4e2f85cc5a02b58487e,
         type: 3}
       propertyPath: _dataGerstnerWaves.Array.data[0]

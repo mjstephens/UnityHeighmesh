@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6e51458c54f46e0b9fad9df72cd249b, type: 3}
   m_Name: DataConfig_Heightmesh_ExampleHigh
   m_EditorClassIdentifier: 
-  Mode: 3
+  Mode: 0
   UpdateRateRipples: 0.1
   UVScale: 100
   SurfaceActualWidth: 50

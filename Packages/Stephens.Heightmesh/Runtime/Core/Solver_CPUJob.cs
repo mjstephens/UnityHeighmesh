@@ -23,14 +23,17 @@ namespace Stephens.Heightmesh
         internal override void Solve(
             Vector3 meshPosition,
             Vector3[] originalVertices, 
+            float meshWidth,
             List<DataHeightwaveRipple> dataRipples, 
             DataWaveSin[] dataWaveSin,
             DataWaveGerstner[] dataWaveGerstner,
+            DataNoise[] dataNoise,
             float time)
         {
             NativeArray<DataHeightwaveRipple> rippleData = new NativeArray<DataHeightwaveRipple>(dataRipples.ToArray(), Allocator.TempJob);
             NativeArray<DataWaveSin> sinWaveData = new NativeArray<DataWaveSin>(dataWaveSin, Allocator.TempJob);
             NativeArray<DataWaveGerstner> gerstnerWaveData = new NativeArray<DataWaveGerstner>(dataWaveGerstner, Allocator.TempJob);
+            NativeArray<DataNoise> noiseData = new NativeArray<DataNoise>(dataNoise, Allocator.TempJob);
             NativeArray<Vector3> vertices = new NativeArray<Vector3>(originalVertices, Allocator.TempJob);
             JobHeightmeshSolver job = new JobHeightmeshSolver
             {
@@ -42,6 +45,8 @@ namespace Stephens.Heightmesh
                 SinWaveCount = dataWaveSin.Length,
                 GerstnerWaveData = gerstnerWaveData,
                 GerstnerWaveCount = dataWaveGerstner.Length,
+                NoiseData = noiseData,
+                NoiseCount = dataNoise.Length,
                 Time = time
             };
 	        
@@ -78,6 +83,7 @@ namespace Stephens.Heightmesh
             rippleData.Dispose();
             sinWaveData.Dispose();
             gerstnerWaveData.Dispose();
+            noiseData.Dispose();
             vertices.Dispose();
         }
 
@@ -97,6 +103,8 @@ namespace Stephens.Heightmesh
             [ReadOnly] internal int SinWaveCount;
             [ReadOnly] [NativeDisableParallelForRestriction] internal NativeArray<DataWaveGerstner> GerstnerWaveData;
             [ReadOnly] internal int GerstnerWaveCount;
+            [ReadOnly] [NativeDisableParallelForRestriction] internal NativeArray<DataNoise> NoiseData;
+            [ReadOnly] internal int NoiseCount;
             [ReadOnly] internal float Time;
         
             public void Execute(int index)
@@ -113,9 +121,14 @@ namespace Stephens.Heightmesh
                     vertexPosV3 = SolveGerstnerWaves(vertexPosV3, MeshPosition, GerstnerWaveData, GerstnerWaveCount);
                 }
                 
+                if (NoiseCount > 0)
+                {
+                    vertexPosV3.y += SolveNoise(vertexPosV3, MeshPosition, NoiseData);
+                }
+                
                 if (RippleCount > 0)
                 {
-                    vertexPosV3.y += SolveRippleWaves(vertexPosV3, RippleData, RippleCount, Time);
+                    vertexPosV3.y = SolveRippleWaves(vertexPosV3, RippleData, RippleCount, Time);
                 }
 
                 Vertices[index] = vertexPosV3;
@@ -163,6 +176,23 @@ namespace Stephens.Heightmesh
             }
             
             return vertex;
+        }
+        
+        private static float SolveNoise(
+            Vector3 vertex,
+            Vector3 meshPosition,
+            NativeArray<DataNoise> data)
+        {
+            float y = vertex.y;
+            foreach (DataNoise noise in data)
+            {
+                y += Mathf.PerlinNoise(
+                         (vertex.x + meshPosition.x - noise.Offset.x) * noise.Spread,
+                         (vertex.z + meshPosition.z - noise.Offset.y) * noise.Spread) 
+                     * noise.Strength;
+            }
+
+            return y;
         }
         
         private static float SolveRippleWaves(
