@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Mode: 0
   UpdateRateRipples: 0.1
-  UVScale: 100
-  SurfaceActualWidth: 50
-  SurfaceActualLength: 50
-  SurfaceWidthPoints: 100
-  SurfaceLengthPoints: 100
+  UVScale: 50
+  SurfaceActualWidth: 200
+  SurfaceActualLength: 200
+  SurfaceWidthPoints: 50
+  SurfaceLengthPoints: 50

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: DataConfig_Noise_Perlin1
   m_EditorClassIdentifier: 
   Type: 0
-  Strength: 0.96
-  Spread: 0.3
-  Speed: {x: 0, y: 5}
+  Strength: 8.83
+  Spread: 0.03
+  Speed: {x: 5, y: 5}

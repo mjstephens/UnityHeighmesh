@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Stephens.Heightmesh
 {
-    public struct DataWaveGerstner
+    public struct DataWaveGerstner : IHeightmeshInputData
     {
         // Config data
         internal float Amplitude;

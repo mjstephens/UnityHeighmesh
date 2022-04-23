@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc71b602c19f4c75b2dcdb42bc0368dc, type: 3}
+  m_Name: DataConfig_Heightmap_TestDonut
+  m_EditorClassIdentifier: 
+  Source: {fileID: 2800000, guid: 0a6b55c975b914926adab548713b6320, type: 3}
+  ResolveMode: 2
+  Invert: 0
+  Speed: {x: 41.68, y: 0}
+  Offset: {x: -6.71, y: 0}
+  Strength: 55.9
+  Opacity: 1

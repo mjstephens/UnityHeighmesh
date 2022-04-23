@@ -5,7 +5,7 @@ namespace Stephens.Heightmesh
     [CreateAssetMenu(
         fileName = "DataConfig_Noise_",
         menuName = "Heightmesh/Noise")]
-    public class DataConfigNoise : ScriptableObject
+    public class DataConfigNoise : DataConfigHeightmeshInput
     {
         [SerializeField] internal NoiseType Type;
         [SerializeField] internal float Strength;

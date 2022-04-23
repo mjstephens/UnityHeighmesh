@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Stephens.Heightmesh
 {
-    public struct DataWaveSin
+    internal struct DataWaveSin : IHeightmeshInputData
     {
         internal float Opacity;
         internal Quaternion Direction;

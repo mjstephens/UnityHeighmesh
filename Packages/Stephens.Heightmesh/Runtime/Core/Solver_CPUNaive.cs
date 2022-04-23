@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,79 +7,73 @@ namespace Stephens.Heightmesh
     {
         #region VARIABLES
 
-        private readonly Vector3[] _verticesCopy;
+        private readonly List<Vector3> _meshVertices = new List<Vector3>();
 
         #endregion VARIABLES
-        
-        
-        #region CONSTRUCTOR
 
-        internal Solver_CPUNaive(Heightmesh heightmesh) : base(heightmesh)
-        {
-            _verticesCopy = new Vector3[heightmesh.Mesh.vertexCount];
-        }
 
-        #endregion CONSTRUCTOR
-        
-        
         #region SOLVE
 
         internal override void Solve(
-            Vector3 meshPosition,
+            Heightmesh heightmesh, 
             Vector3[] originalVertices, 
-            float meshWidth,
-            List<DataHeightwaveRipple> dataRipples,
-            DataWaveSin[] dataWaveSin,
-            DataWaveGerstner[] dataWaveGerstner,
-            DataNoise[] dataNoise,
+            List<IHeightmeshInput> data, 
+            List<DataConfigHeightmeshInput> configs,
             float time)
         {
-            int ripplesCount = dataRipples.Count;
-            int sinCount = dataWaveSin.Length;
-            int gerstnerCount = dataWaveGerstner.Length;          
-            int noiseCount = dataNoise.Length;
+            base.Solve(heightmesh, originalVertices, data, configs, time);
             
+            // Copy original vertices for manipulation
+            _meshVertices.Clear();
             for (int i = 0; i < originalVertices.Length; i++)
             {
-                _verticesCopy[i] = originalVertices[i];
+                _meshVertices.Add(originalVertices[i]);
             }
-
-            bool doSolveRipples = ripplesCount > 0;
-            bool doSolveSin = sinCount > 0;
-            bool doSolveGerstner = gerstnerCount > 0;
-            bool doSolveNoise = noiseCount > 0;
-            for (int i = 0; i < _verticesCopy.Length; i++)
+            
+            Vector3 meshPosition = heightmesh.transform.position;
+            for (int i = 0; i < _meshVertices.Count; i++)
             {
-                if (doSolveSin)
+                Vector3 vertex = _meshVertices[i];
+                
+                if (_sinCount > 0)
                 {
-                    _verticesCopy[i].y += SolveSinWaves(_verticesCopy[i], meshPosition, dataWaveSin, sinCount);
+                    vertex.y += SolveSinWaves(vertex, meshPosition, _dataWaveSin, _sinCount);
                 }
                 
-                if (doSolveGerstner)
+                if (_gerstnerCount > 0)
                 {
-                    _verticesCopy[i] = SolveGerstnerWaves(_verticesCopy[i], meshPosition, dataWaveGerstner, gerstnerCount);
+                    vertex = SolveGerstnerWaves(vertex, meshPosition, _dataWaveGerstner, _gerstnerCount);
+                }
+            
+                if (_noiseCount > 0)
+                {
+                    vertex.y += SolveNoise(vertex, meshPosition, _dataNoise, _noiseCount);
                 }
 
-                if (doSolveNoise)
+                if (_mapCount > 0)
                 {
-                    _verticesCopy[i].y += SolveNoise(_verticesCopy[i], meshPosition, dataNoise);
+                    vertex.y = SolveHeightmap(
+                        vertex, 
+                        _meshVertices[i],
+                        heightmesh.DataConfig.SurfaceActualWidth,
+                        meshPosition,
+                        _dataHeightmap,
+                        _dataConfigHeightmap,
+                        _mapCount);
                 }
-                
-                if (doSolveRipples)
-                {
-                    _verticesCopy[i].y = SolveRippleWaves(_verticesCopy[i], dataRipples, ripplesCount, time);
-                }
+
+                _meshVertices[i] = vertex;
             }
             
             // Update mesh
-            _heightmesh.Mesh.SetVertices(_verticesCopy);
-            _heightmesh.Mesh.RecalculateNormals();
+            heightmesh.Mesh.SetVertices(_meshVertices);
+            heightmesh.Mesh.RecalculateNormals();
         }
 
         private static float SolveSinWaves(
             Vector3 vertex, 
             Vector3 meshPosition,
-            DataWaveSin[] waveData, 
+            List<DataWaveSin> waveData, 
             int count)
         {
             float y = vertex.y;
@@ -92,7 +85,7 @@ namespace Stephens.Heightmesh
                     vertex += meshPosition;
                 }
                 
-                y += CalcSinWave(vertex, waveData[i]);
+                y += WaveSin.CalcForVertexCPU(vertex, waveData[i]);
             }
 
             return y;
@@ -101,37 +94,55 @@ namespace Stephens.Heightmesh
         private static Vector3 SolveGerstnerWaves(
             Vector3 vertex,
             Vector3 meshPosition,
-            DataWaveGerstner[] waveData,
+            List<DataWaveGerstner> waveData,
             int count)
         {
             float waveCountMulti = 1f / count;
             for (int i = 0; i < count; i++)
             {
-                Vector3 pos = waveData[i].WorldAnchored ? vertex + meshPosition : vertex;
+                Vector3 pos = waveData[i].WorldAnchored ? meshPosition + vertex : vertex;
                 Vector3 omni = pos;
+                Vector3 origin = waveData[i].WorldAnchored ? waveData[i].Origin - meshPosition : waveData[i].Origin;
                 if (waveData[i].WorldAnchored && waveData[i].OmniDirectional)
                 {
                     omni = vertex;
                 }
                 
-                vertex += CalcGerstnerWave(pos, omni, waveData[i], waveCountMulti);
+                vertex += WaveGerstner.CalcForVertexCPU(pos, omni, origin, waveData[i], waveCountMulti);
             }
             
             return vertex;
         }
 
         private static float SolveNoise(
-            Vector3 vertex, 
+            Vector3 vertex,
             Vector3 meshPosition,
-            DataNoise[] data)
+            List<DataNoise> data,
+            int count)
         {
             float y = vertex.y;
-            foreach (DataNoise noise in data)
+            for (int i = 0; i < count; i++)
             {
-                y += Mathf.PerlinNoise(
-                         (vertex.x + meshPosition.x - noise.Offset.x) * noise.Spread,
-                         (vertex.z + meshPosition.z - noise.Offset.y) * noise.Spread) 
-                     * noise.Strength;
+                y += Noise.CalcForVertexCPU(vertex, meshPosition, data[i]);
+            }
+
+            return y;
+        }
+        
+        private static float SolveHeightmap(
+            Vector3 vertex,
+            Vector3 vertexOriginal,
+            float meshWidth,
+            Vector3 meshPosition,
+            List<DataHeightmap> data,
+            List<DataConfigHeightmap> dataConfig,
+            int count)
+        {
+            float y = vertex.y;
+            
+            for (int i = 0; i < count; i++)
+            {
+                y += Heightmap.CalcForVertexCPU(vertex, vertexOriginal, dataConfig[i].Pixels, meshPosition, meshWidth, data[i]);
             }
 
             return y;
@@ -143,17 +154,18 @@ namespace Stephens.Heightmesh
             int ripplesCount, 
             float time)
         {
-            Vector2 vertexPosition = new Vector2 (vertex.x, vertex.z);
+            Vector2 v2 = new Vector2(vertex.x, vertex.z);
             float y = vertex.y;
             
             for (int i = 0; i < ripplesCount; i++)
             {
-                y += CalcRipples(vertexPosition, dataRipples[i], time);
+                y += CalcRipples(v2, dataRipples[i], time);
             }
 
             return y;
         }
 
         #endregion SOLVE
+        
     }
 }

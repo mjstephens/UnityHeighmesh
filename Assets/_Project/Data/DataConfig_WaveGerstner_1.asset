@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f96da85fd84e278030d135746facb0, type: 3}
   m_Name: DataConfig_WaveGerstner_1
   m_EditorClassIdentifier: 
-  Opacity: 0
-  Amplitude: 0.1
-  Wavelength: 17.14
-  Direction: 141.63
-  Speed: 1
+  Opacity: 1
+  Amplitude: 0.6
+  Wavelength: 98.2
+  Direction: 320.1
+  Speed: 1.39
   WorldAnchored: 1
-  Origin: {x: 20, y: 0, z: -16.36}
-  OmniDirectional: 1
+  PeakSharpness: 0.78
+  Origin: {x: -26.3, y: 0, z: -28.21}
+  OmniDirectional: 0

@@ -1,35 +1,123 @@
+using System.Linq;
+using Unity.Collections;
 using UnityEngine;
 
 namespace Stephens.Heightmesh
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    internal class Heightmap
+    internal class Heightmap : HeightmeshInput<DataConfigHeightmap, DataHeightmap>
     {
         #region VARIABLES
 
-        private readonly DataHeightmap _data;
-        private readonly DataConfigHeightmap _configData;
         internal DataHeightmapModification Modification;
+
+        private readonly float[] _pixels;
 
         #endregion VARIABLES
 
 
         #region CONSTRUCTION
 
-        internal Heightmap(DataConfigHeightmap map)
+        internal Heightmap(DataConfigHeightmap config) : base(config)
         {
-            _configData = map;
+            config.Pixels = new NativeArray<float>(GetPixels(config.Source).ToArray(), Allocator.Persistent);
+        }
+
+        #endregion CONSTRUCTION
+
+
+        #region DATA
+
+        protected override void UpdateData(float delta)
+        {
             _data = new DataHeightmap()
             {
-                Source = map.Source,
-                Pixels = GetPixels(map.Source),
-                Height = map.Source.height,
-                Width = map.Source.width
+                Invert = _config.Invert,
+                Height = _config.Source.height,
+                Width = _config.Source.width,
+                Offset = _config.Offset,
+                Opacity = _config.Opacity,
+                Strength = _config.Strength,
+                ResolveMode = _config.ResolveMode
             };
         }
 
+        #endregion DATA
+
+
+        #region SOLVE
+        
+        internal static float CalcForVertexCPU(
+            Vector3 vertex,
+            Vector3 vertexCoords,
+            NativeArray<float> pixels,
+            Vector3 meshPosition,
+            float meshWidth,
+            DataHeightmap data)
+        {
+            float y = 0;
+            float multFactor = data.Width / meshWidth;
+            
+            // Clamp texture offset
+            Vector2 offset = GetClampedOffset(data);
+            
+            int texX = (int)((multFactor * vertexCoords.x) - (offset.x * data.Width)) + (data.Width / 2);
+            int texZ = (int)((multFactor * vertexCoords.z) - (offset.y * data.Height)) + (data.Height / 2);
+                    
+            int currentPixel = (texX + (data.Width * texZ));
+            if (currentPixel > pixels.Length - 1)
+            {
+                currentPixel -= pixels.Length;
+            }
+            else if (currentPixel < 0)
+            {
+                currentPixel += pixels.Length; 
+            }
+                    
+            int pixelAdjust = Mathf.Clamp(currentPixel, 0, pixels.Length - 1);
+            y = data.Invert ? 1 - pixels[pixelAdjust] : pixels[pixelAdjust];
+            y *= data.Opacity;
+
+            switch (data.ResolveMode)
+            {
+                case HeightmapResolveMode.Absolute: 
+                    y *= data.Strength; 
+                    break;
+                case HeightmapResolveMode.Additive: 
+                    y = vertex.y + (y * data.Strength); 
+                    break;
+                case HeightmapResolveMode.Subtractive:
+                    y = vertex.y - ((vertex.y * 2) * y);
+                    break;
+            }
+
+            return y;
+        }
+        
+        private static Vector2 GetClampedOffset(DataHeightmap data)
+        {
+            Vector2 offset = data.Offset;
+            
+            while (offset.x > data.Width)
+            {
+                offset = new Vector2(offset.x - data.Width, offset.y);
+            }
+            while (offset.x < 0)
+            {
+                offset = new Vector2(offset.x + data.Width, offset.y);
+            }
+            
+            while (offset.y > data.Height)
+            {
+                offset = new Vector2(offset.x, offset.y - data.Height);
+            }
+            while (offset.y < 0)
+            {
+                offset = new Vector2(offset.x, offset.y + data.Height);
+            }
+            
+            return offset;
+        }
+        
         private static float[] GetPixels(Texture2D source)
         {
             Color32[] colors = source.GetPixels32();
@@ -42,82 +130,21 @@ namespace Stephens.Heightmesh
             return pixels;
         }
 
-        #endregion CONSTRUCTION
-        
-
-        #region READ
-
-        internal float[] ReadHeight(DataHeightmesh target)
-        {
-            float[] heightPoints = new float[target.VerticesCount];
-            float multFactor = (float)_data.Width / (float)target.Dimensions;
-            
-            // Clamp texture offset
-            Vector2 offset = GetClampedOffset();
-            
-            // Cycle through mesh vertices
-            for (int x = 0; x <= target.Dimensions; x++)
-            {
-                for (int z = 0; z <= target.Dimensions; z++)
-                {
-                    int texX = (int)((multFactor * x) + offset.x);
-                    int texZ = (int)((multFactor * z) + offset.y);
-                    
-                    int currentPixel = (texX + (_data.Width * texZ));
-                    if (currentPixel > _data.Pixels.Length - 1)
-                    {
-                        currentPixel -= _data.Pixels.Length;
-                    }
-                    else if (currentPixel < 0)
-                    {
-                        currentPixel += _data.Pixels.Length;
-                    }
-                    
-                    int pixelAdjust = Mathf.Clamp((int)currentPixel, 0, _data.Pixels.Length - 1);
-                    float y = _data.Pixels[pixelAdjust];
-                    y *= _configData.Strength;
-                    heightPoints[Index(x, z, target.Dimensions)] = y;
-                }
-            }
-
-            return heightPoints;
-        }
-        
-        private Vector2 GetClampedOffset()
-        {
-            Vector2 offset = _configData.Offset;
-            
-            while (offset.x > _data.Width)
-            {
-                offset = new Vector2(offset.x - _data.Width, offset.y);
-            }
-            while (offset.x < 0)
-            {
-                offset = new Vector2(offset.x + _data.Width, offset.y);
-            }
-            
-            while (offset.y > _data.Height)
-            {
-                offset = new Vector2(offset.x, offset.y - _data.Height);
-            }
-            while (offset.y < 0)
-            {
-                offset = new Vector2(offset.x, offset.y + _data.Height);
-            }
-            
-            return offset;
-        }
-
-        #endregion READ
-
-
-        #region UTILITY
-
-        private int Index(int x, int z, int dimensions)
+        private static int Index(int x, int z, int dimensions)
         {
             return x * (dimensions + 1) + z;
         }
 
-        #endregion UTILITY
+        #endregion SOLVE
+
+
+        #region CLEANUP
+
+        internal void Cleanup()
+        {
+            _config.Pixels.Dispose();
+        }
+
+        #endregion CLEANUP
     }
 }

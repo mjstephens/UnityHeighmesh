@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Stephens.Heightmesh
 {
-    public class DataConfigWave : ScriptableObject
+    public class DataConfigWave : DataConfigHeightmeshInput
     {
         [Header("Wave Settings")]
         [SerializeField] [Range(0, 1)] internal float Opacity;

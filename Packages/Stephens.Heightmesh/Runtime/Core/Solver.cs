@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Stephens.Heightmesh
@@ -7,70 +8,54 @@ namespace Stephens.Heightmesh
     {
         #region VARIABLES
 
-        protected readonly Heightmesh _heightmesh;
+        protected readonly List<DataWaveSin> _dataWaveSin = new List<DataWaveSin>();
+        protected int _sinCount;
+        protected readonly List<DataWaveGerstner> _dataWaveGerstner = new List<DataWaveGerstner>();
+        protected int _gerstnerCount;
+        protected readonly List<DataNoise> _dataNoise = new List<DataNoise>();
+        protected int _noiseCount;
+        protected readonly List<DataConfigHeightmap> _dataConfigHeightmap = new List<DataConfigHeightmap>();
+        protected readonly List<DataHeightmap> _dataHeightmap = new List<DataHeightmap>();
+        protected int _mapCount;
 
         #endregion VARIABLES
-        
-        
-        #region CONSTRUCTOR
 
-        internal Solver(Heightmesh heightmesh)
-        {
-            _heightmesh = heightmesh;
-        }
- 
-        #endregion CONSTRUCTOR
-        
-        
+
         #region SOLVE
-
-        internal abstract void Solve(
-            Vector3 meshPosition,
-            Vector3[] originalVertices,
-            float meshWidth,
-            List<DataHeightwaveRipple> dataRipples,
-            DataWaveSin[] dataWaveSin,
-            DataWaveGerstner[] dataWaveGerstner,
-            DataNoise[] dataNoise,
-            float time);
-
-        protected static float CalcSinWave(
-            Vector3 vertex, 
-            DataWaveSin wave)
-        {
-            Vector3 dir = wave.Direction * vertex;
-            return (Mathf.Sin((dir.z * wave.Wavelength) + wave.Offset) * wave.Amplitude) * wave.Opacity;
-        }
         
-        protected static Vector3 CalcGerstnerWave(
-            Vector3 vertex, 
-            Vector3 omni,
-            DataWaveGerstner wave, 
-            float countMulti)
+        internal virtual void Solve(
+            Heightmesh heightmesh, 
+            Vector3[] originalVertices, 
+            List<IHeightmeshInput> data, 
+            List<DataConfigHeightmeshInput> configs,
+            float time)
         {
-            float amplitude = wave.Amplitude;
-            Vector3 omniPos = wave.Origin;
-            float omniDir = wave.OmniDirectional ? 1 : 0;
-            
-            //  calculate wind direction - TODO - currently radians
-            Vector3 windOmniInput = (omni - omniPos) * omniDir;
-            Vector3 windDir = wave.WindDirectionInput + windOmniInput;
-            windDir = Vector3.Normalize(windDir);
-            float dir = Vector3.Dot(windDir, omni - omniPos * omniDir);
+            _dataWaveGerstner.Clear();
+            _dataWaveSin.Clear();
+            _dataNoise.Clear();
+            _dataHeightmap.Clear();
 
-            ////////////////////////////position output calculations/////////////////////////
-            float calc = dir * wave.Wavelength - wave.Offset; // the wave calculation
-            float cosCalc = Mathf.Cos(calc); // cosine version(used for horizontal undulation)
-            float sinCalc = Mathf.Sin(calc); // sin version(used for vertical undulation)
+            // Sort + assign data
+            for (int i = 0; i < data.Count; i++)
+            {
+                switch (data[i])
+                {
+                    case WaveGerstner gerstner: _dataWaveGerstner.Add(gerstner.Data); break;
+                    case WaveSin sin: _dataWaveSin.Add(sin.Data); break;
+                    case Noise noise: _dataNoise.Add(noise.Data); break;
+                    case Heightmap map:
+                        _dataConfigHeightmap.Add(configs[i] as DataConfigHeightmap);
+                        _dataHeightmap.Add(map.Data);
+                        break;
+                }
+            }
 
-            // calculate the offsets for the current point
-            vertex.x = wave.Qi * amplitude * windDir.x * cosCalc;
-            vertex.z = wave.Qi * amplitude * windDir.z * cosCalc;
-            vertex.y = sinCalc * amplitude * countMulti; // the height is divided by the number of waves 
-
-            return vertex;
+            _gerstnerCount = _dataWaveGerstner.Count;
+            _sinCount = _dataWaveSin.Count;
+            _noiseCount = _dataNoise.Count;
+            _mapCount = _dataHeightmap.Count;
         }
-        
+
         protected static float CalcRipples(
             Vector2 vertex, 
             DataHeightwaveRipple ripple, 
