@@ -22,6 +22,9 @@ namespace Stephens.Heightmesh
         [Header("Ripple Waves")]
         [SerializeField] private Transform[] _waveSources;
         
+        [Header("Test")]
+        [SerializeField] private Vector3 _simulationOffset;
+        
         internal DataConfigHeightmesh DataConfig => _configData;
         internal Mesh Mesh { get; private set; }
 
@@ -84,7 +87,7 @@ namespace Stephens.Heightmesh
 
         internal void Solve(List<IHeightmeshInput> inputs, List<DataConfigHeightmeshInput> configs, float time)
         {
-	        _solver?.Solve(this, _originalVertices, inputs, configs, time);
+	        _solver?.Solve(this, _originalVertices, inputs, configs, _simulationOffset, time);
         }
 
         #endregion SOLVE

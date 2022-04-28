@@ -19,9 +19,10 @@ namespace Stephens.Heightmesh
             Vector3[] originalVertices, 
             List<IHeightmeshInput> data, 
             List<DataConfigHeightmeshInput> configs,
+            Vector3 simOffset,
             float time)
         {
-            base.Solve(heightmesh, originalVertices, data, configs, time);
+            base.Solve(heightmesh, originalVertices, data, configs, simOffset, time);
             
             // Copy original vertices for manipulation
             _meshVertices.Clear();
@@ -37,17 +38,17 @@ namespace Stephens.Heightmesh
                 
                 if (_sinCount > 0)
                 {
-                    vertex.y += SolveSinWaves(vertex, meshPosition, _dataWaveSin, _sinCount);
+                    vertex.y += SolveSinWaves(vertex, meshPosition, _dataWaveSin, _sinCount, simOffset);
                 }
                 
                 if (_gerstnerCount > 0)
                 {
-                    vertex = SolveGerstnerWaves(vertex, meshPosition, _dataWaveGerstner, _gerstnerCount);
+                    vertex = SolveGerstnerWaves(vertex, meshPosition, _dataWaveGerstner, _gerstnerCount, simOffset);
                 }
             
                 if (_noiseCount > 0)
                 {
-                    vertex.y += SolveNoise(vertex, meshPosition, _dataNoise, _noiseCount);
+                    vertex.y += SolveNoise(vertex, meshPosition, _dataNoise, _noiseCount, simOffset);
                 }
 
                 if (_mapCount > 0)
@@ -74,7 +75,8 @@ namespace Stephens.Heightmesh
             Vector3 vertex, 
             Vector3 meshPosition,
             List<DataWaveSin> waveData, 
-            int count)
+            int count,
+            Vector3 offset)
         {
             float y = vertex.y;
             for (int i = 0; i < count; i++)
@@ -85,7 +87,7 @@ namespace Stephens.Heightmesh
                     vertex += meshPosition;
                 }
                 
-                y += WaveSin.CalcForVertexCPU(vertex, waveData[i]);
+                y += WaveSin.CalcForVertexCPU(vertex + offset, waveData[i]);
             }
 
             return y;
@@ -95,14 +97,15 @@ namespace Stephens.Heightmesh
             Vector3 vertex,
             Vector3 meshPosition,
             List<DataWaveGerstner> waveData,
-            int count)
+            int count,
+            Vector3 offset)
         {
             float waveCountMulti = 1f / count;
             for (int i = 0; i < count; i++)
             {
-                Vector3 pos = waveData[i].WorldAnchored ? meshPosition + vertex : vertex;
+                Vector3 pos = (waveData[i].WorldAnchored ? meshPosition + vertex : vertex) + offset;
                 Vector3 omni = pos;
-                Vector3 origin = waveData[i].WorldAnchored ? waveData[i].Origin - meshPosition : waveData[i].Origin;
+                Vector3 origin = (waveData[i].WorldAnchored ? waveData[i].Origin - meshPosition : waveData[i].Origin) + offset;
                 if (waveData[i].WorldAnchored && waveData[i].OmniDirectional)
                 {
                     omni = vertex;
@@ -118,12 +121,13 @@ namespace Stephens.Heightmesh
             Vector3 vertex,
             Vector3 meshPosition,
             List<DataNoise> data,
-            int count)
+            int count,
+            Vector3 offset)
         {
             float y = vertex.y;
             for (int i = 0; i < count; i++)
             {
-                y += Noise.CalcForVertexCPU(vertex, meshPosition, data[i]);
+                y += Noise.CalcForVertexCPU(vertex + offset, meshPosition, data[i]);
             }
 
             return y;

@@ -28,6 +28,7 @@ namespace Stephens.Heightmesh
             Vector3[] originalVertices, 
             List<IHeightmeshInput> data, 
             List<DataConfigHeightmeshInput> configs,
+            Vector3 simOffset,
             float time)
         {
             _dataWaveGerstner.Clear();

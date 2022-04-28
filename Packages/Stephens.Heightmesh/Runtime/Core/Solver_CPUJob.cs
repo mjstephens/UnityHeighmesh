@@ -17,16 +17,17 @@ namespace Stephens.Heightmesh
             Vector3[] originalVertices, 
             List<IHeightmeshInput> data, 
             List<DataConfigHeightmeshInput> configs,
+            Vector3 simOffset,
             float time)
         {
-            base.Solve(heightmesh, originalVertices, data, configs, time);
+            base.Solve(heightmesh, originalVertices, data, configs, simOffset, time);
             
             // Allocate native arrays for use in jobs
             NativeArray<Vector3> vertices = new NativeArray<Vector3>(originalVertices, Allocator.TempJob);
             _vertexOffsets = new NativeArray<Vector2>(originalVertices.Length, Allocator.TempJob);
             
             // Solve inputs using jobs + native arrays
-            SolveMeshMathInputs(heightmesh, vertices);
+            SolveMeshMathInputs(heightmesh, vertices, simOffset);
             SolveMeshMapInputs(heightmesh, vertices);
             SolveVertexOffsetAdditions(heightmesh, vertices);
 
@@ -43,7 +44,7 @@ namespace Stephens.Heightmesh
         /// "Math" inputs are solved in a single job - these are global inputs that don't require specific vertex distance checks, but
         /// rather are solved usinq equations (noise + waves)
         /// </summary>
-        private void SolveMeshMathInputs(Heightmesh heightmesh, NativeArray<Vector3> vertices)
+        private void SolveMeshMathInputs(Heightmesh heightmesh, NativeArray<Vector3> vertices, Vector3 simOffset)
         {
             NativeArray<DataWaveSin> sinWaveData = new NativeArray<DataWaveSin>(_dataWaveSin.ToArray(), Allocator.TempJob);
             var gerstnerWaveData = new NativeArray<DataWaveGerstner>(_dataWaveGerstner.ToArray(), Allocator.TempJob);
@@ -59,7 +60,8 @@ namespace Stephens.Heightmesh
                 GerstnerWaveData = gerstnerWaveData,
                 GerstnerWaveCount = _dataWaveGerstner.Count,
                 NoiseData = noiseData,
-                NoiseCount = _dataNoise.Count
+                NoiseCount = _dataNoise.Count,
+                SimulationOffset = simOffset
             };
             
             // From: https://github.com/Unity-Technologies/MeshApiExamples/blob/master/Assets/ProceduralWaterMesh/ProceduralWaterMesh.cs
@@ -166,6 +168,7 @@ namespace Stephens.Heightmesh
             [ReadOnly] internal int GerstnerWaveCount;
             [ReadOnly] [NativeDisableParallelForRestriction] internal NativeArray<DataNoise> NoiseData;
             [ReadOnly] internal int NoiseCount;
+            [ReadOnly] internal Vector3 SimulationOffset;
         
             public void Execute(int index)
             {
@@ -174,7 +177,7 @@ namespace Stephens.Heightmesh
                 
                 if (SinWaveCount > 0)
                 {
-                    vertex.y += SolveSinWaves(vertex, MeshPosition, SinWaveData, SinWaveCount);
+                    vertex.y += SolveSinWaves(vertex, MeshPosition, SinWaveData, SinWaveCount, SimulationOffset);
                 }
 
                 if (GerstnerWaveCount > 0)
@@ -182,14 +185,20 @@ namespace Stephens.Heightmesh
                     // Gerstner waves require special treatment; since they can offset the xz positions of vertices, they could throw off
                     // subsequent calculations that assume the vertices are evenly spaced. For this reason we store the offsets generated
                     // by gerstner waves separately, and only apply them after all other calculations are completed
-                    DataVertexGerstner data = SolveGerstnerWaves(vertex, MeshPosition, GerstnerWaveData, GerstnerWaveCount);
+                    DataVertexGerstner data = SolveGerstnerWaves(
+                        vertex, 
+                        MeshPosition, 
+                        GerstnerWaveData, 
+                        GerstnerWaveCount, 
+                        SimulationOffset);
+                    
                     vertex.y = data.Position.y;
                     offset += data.XZOffset;
                 }
                 
                 if (NoiseCount > 0)
                 {
-                    vertex.y += SolveNoise(vertex, MeshPosition, NoiseData);
+                    vertex.y += SolveNoise(vertex, MeshPosition, NoiseData, NoiseCount, SimulationOffset);
                 }
 
                 Vertices[index] = vertex;
@@ -201,7 +210,8 @@ namespace Stephens.Heightmesh
             Vector3 vertex, 
             Vector3 meshPosition,
             NativeArray<DataWaveSin> waveData, 
-            int count)
+            int count,
+            Vector3 offset)
         {
             float y = vertex.y;
             for(int i = 0; i < count; i++)
@@ -212,7 +222,7 @@ namespace Stephens.Heightmesh
                     vertex += meshPosition;
                 }
                     
-                y += WaveSin.CalcForVertexCPU(vertex, waveData[i]);
+                y += WaveSin.CalcForVertexCPU(vertex + offset, waveData[i]);
             }
 
             return y;
@@ -222,15 +232,16 @@ namespace Stephens.Heightmesh
             Vector3 vertex,
             Vector3 meshPosition,
             NativeArray<DataWaveGerstner> waveData,
-            int count)
+            int count,
+            Vector3 offset)
         {
             float waveCountMulti = 1f / count;
             DataVertexGerstner data = new DataVertexGerstner();
             for (int i = 0; i < count; i++)
             {
-                Vector3 pos = waveData[i].WorldAnchored ? vertex + meshPosition : vertex;
+                Vector3 pos = (waveData[i].WorldAnchored ? vertex + meshPosition : vertex) + offset;
                 Vector3 omni = pos;
-                Vector3 origin = waveData[i].WorldAnchored ? waveData[i].Origin - meshPosition : waveData[i].Origin;
+                Vector3 origin = (waveData[i].WorldAnchored ? waveData[i].Origin - meshPosition : waveData[i].Origin) + offset;
                 if (waveData[i].WorldAnchored && waveData[i].OmniDirectional)
                 {
                     omni = vertex;
@@ -250,12 +261,14 @@ namespace Stephens.Heightmesh
         private static float SolveNoise(
             Vector3 vertex,
             Vector3 meshPosition,
-            NativeArray<DataNoise> data)
+            NativeArray<DataNoise> data,
+            int count,
+            Vector3 offset)
         {
             float y = vertex.y;
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 0; i < count; i++)
             {
-                y += Noise.CalcForVertexCPU(vertex, meshPosition, data[i]);
+                y += Noise.CalcForVertexCPU(vertex + offset, meshPosition, data[i]);
             }
 
             return y;
