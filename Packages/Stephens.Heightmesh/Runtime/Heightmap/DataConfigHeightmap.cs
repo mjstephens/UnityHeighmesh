@@ -7,7 +7,7 @@ namespace Stephens.Heightmesh
     [CreateAssetMenu(
         fileName = "DataConfig_Heightmap_",
         menuName = "Heightmesh/Heightmap")]
-    public class DataConfigHeightmap : DataConfigHeightmeshInput
+    internal class DataConfigHeightmap : DataConfigHeightmeshInput
     {
         [SerializeField] internal Texture2D Source;
         [SerializeField] internal HeightmapResolveMode ResolveMode;

@@ -1,6 +1,6 @@
 namespace Stephens.Heightmesh
 {
-    internal enum NoiseType
+    public enum NoiseType
     {
         Perlin,
         Cellular,

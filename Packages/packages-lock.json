@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.mstephens.buoyancy": {
+      "version": "file:Stephens.Buoyancy",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.mathematics": "1.1.0",
+        "com.unity.burst": "1.2.3"
+      }
+    },
     "com.mstephens.heightmesh": {
       "version": "file:Stephens.Heightmesh",
       "depth": 0,

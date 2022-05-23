@@ -11,7 +11,7 @@ namespace Stephens.Heightmesh
     /// </summary>
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshRenderer))]
-    public class Heightmesh : MonoBehaviour
+    public class Heightmesh : MonoBehaviour, ISolverResultsReceivable
     {
         #region VARIABLES
 
@@ -21,14 +21,12 @@ namespace Stephens.Heightmesh
 
         [Header("Ripple Waves")]
         [SerializeField] private Transform[] _waveSources;
-        
-        [Header("Test")]
-        [SerializeField] private Vector3 _simulationOffset;
-        
+
         internal DataConfigHeightmesh DataConfig => _configData;
         internal Mesh Mesh { get; private set; }
+        internal Vector3[] OriginalVertices => _originalVertices;
 
-        private Solver _solver;
+        //private Solver _solver;
         private DataHeightmesh _data;
         private Vector3[] _originalVertices;
         private MeshFilter _meshFilter;
@@ -43,32 +41,32 @@ namespace Stephens.Heightmesh
         private void Awake()
         {
 	        Mesh = CreateMesh();
-	        if (_solver == null)
-	        {
-		        _solver = ResolveSolver();
-	        }
+	        // if (_solver == null)
+	        // {
+		       //  _solver = ResolveSolver();
+	        // }
         }
         
-        private Solver ResolveSolver()
-        {
-	        switch (_configData.Mode)
-	        {
-		        case HeightmeshUpdateMode.CPU_Naive: 
-			        return new Solver_CPUNaive();
-			        break;
-		        case HeightmeshUpdateMode.CPU_Job:
-		        case HeightmeshUpdateMode.CPU_JobBurst:
-		        case HeightmeshUpdateMode.CPU_JobBurstThreaded:
-			        return new Solver_CPUJob();
-			        break;
-		        case HeightmeshUpdateMode.GPU_Compute:
-
-			        break;
-	        }
-	        
-	        // Fallback
-	        return new Solver_CPUNaive();
-        }
+        // private Solver ResolveSolver()
+        // {
+	       //  switch (_configData.Mode)
+	       //  {
+		      //   case SimulationSolverMode.CPU_Naive: 
+			     //    return new Solver_CPUNaive();
+			     //    break;
+		      //   case SimulationSolverMode.CPU_Job:
+		      //   case SimulationSolverMode.CPU_JobBurst:
+		      //   case SimulationSolverMode.CPU_JobBurstThreaded:
+			     //    return new Solver_CPUJob();
+			     //    break;
+		      //   case SimulationSolverMode.GPU_Compute:
+        //
+			     //    break;
+	       //  }
+	       //  
+	       //  // Fallback
+	       //  return new Solver_CPUNaive();
+        // }
 
         private void OnEnable()
         {
@@ -85,9 +83,10 @@ namespace Stephens.Heightmesh
         
         #region SOLVE
 
-        internal void Solve(List<IHeightmeshInput> inputs, List<DataConfigHeightmeshInput> configs, float time)
+	    void ISolverResultsReceivable.DoReceiveSolverResults(List<Vector3> positions, List<Vector2> offsets)
         {
-	        _solver?.Solve(this, _originalVertices, inputs, configs, _simulationOffset, time);
+	        Mesh.SetVertices(positions);
+	        Mesh.RecalculateNormals();
         }
 
         #endregion SOLVE

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: DataConfig_WaveGerstner_2
   m_EditorClassIdentifier: 
   Opacity: 1
-  Amplitude: 0.1
-  Wavelength: 94.93
-  Direction: 192.2
-  Speed: 0.1
+  Amplitude: 5.6
+  Wavelength: 30.55
+  Direction: -3.7
+  Speed: 2.85
   WorldAnchored: 1
-  PeakSharpness: 0.501
+  PeakSharpness: 0.474
   Origin: {x: -19, y: 0, z: 0}
   OmniDirectional: 0

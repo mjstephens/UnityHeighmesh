@@ -8,9 +8,7 @@ namespace Stephens.Heightmesh
     public class DataConfigHeightmesh : ScriptableObject
     {
         [Header("Quality")]
-        [SerializeField] internal HeightmeshUpdateMode Mode = HeightmeshUpdateMode.CPU_JobBurstThreaded;
         [SerializeField] internal float UpdateRateRipples = 0.1f;
-        
 
         [Header("Surface")]
         [SerializeField] internal float UVScale = 100;

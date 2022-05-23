@@ -7,7 +7,8 @@ namespace Stephens.Heightmesh
         // Config data
         internal float Amplitude;
         internal Vector3 Origin;
-        internal bool OmniDirectional;
+        internal bool  OmniDirectional;
+        internal float  OmniDirection;
         internal bool WorldAnchored;
 
         // Runtime calculated

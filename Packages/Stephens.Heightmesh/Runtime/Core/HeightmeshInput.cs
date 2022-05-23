@@ -8,7 +8,7 @@ namespace Stephens.Heightmesh
     /// </summary>
     internal abstract class HeightmeshInput<TDataConfig, TData> : IHeightmeshInput
         where TDataConfig : DataConfigHeightmeshInput
-        where TData : struct
+        where TData : IHeightmeshInputData
     {
         #region VARIABLES
 
@@ -35,7 +35,6 @@ namespace Stephens.Heightmesh
 
         void IHeightmeshInput.Tick(float delta)
         {
-            // Update the data for this entity
             UpdateData(delta);
         }
         

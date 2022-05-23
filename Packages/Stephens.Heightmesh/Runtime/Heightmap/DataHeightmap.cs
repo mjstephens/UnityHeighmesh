@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Stephens.Heightmesh
 {
-    internal struct DataHeightmap : IHeightmeshInputData
+    public struct DataHeightmap : IHeightmeshInputData
     {
         internal bool Invert;
         internal int Width;

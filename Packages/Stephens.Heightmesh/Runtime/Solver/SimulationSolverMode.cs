@@ -1,6 +1,6 @@
 namespace Stephens.Heightmesh
 {
-    public enum HeightmeshUpdateMode
+    public enum SimulationSolverMode
     {
         CPU_Naive,
         CPU_Job,

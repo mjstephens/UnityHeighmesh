@@ -7,9 +7,9 @@ namespace Stephens.Heightmesh
         menuName = "Heightmesh/Noise")]
     public class DataConfigNoise : DataConfigHeightmeshInput
     {
-        [SerializeField] internal NoiseType Type;
-        [SerializeField] internal float Strength;
-        [SerializeField] internal float Spread;
-        [SerializeField] internal Vector2 Speed;
+        [SerializeField] public NoiseType Type;
+        [SerializeField] public float Strength;
+        [SerializeField] public float Spread;
+        [SerializeField] public Vector2 Speed;
     }
 }

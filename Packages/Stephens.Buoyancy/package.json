@@ -1,0 +1,11 @@
+{
+  "name": "com.mstephens.buoyancy",
+  "description": "A package for simulating buoyancy over the heightmesh package inputs..",
+  "version": "1.0.0",
+  "unity": "2019.4",
+  "displayName": "Buoyancy",
+  "dependencies": {
+    "com.unity.mathematics": "1.1.0",
+    "com.unity.burst": "1.2.3"
+  }
+}
