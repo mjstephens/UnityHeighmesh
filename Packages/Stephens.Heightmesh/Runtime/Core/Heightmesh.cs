@@ -29,7 +29,6 @@ namespace Stephens.Heightmesh
         //private Solver _solver;
         private DataHeightmesh _data;
         private Vector3[] _originalVertices;
-        private MeshFilter _meshFilter;
         private static float _time;
         private readonly List<DataHeightwaveRipple> _dataRipples = new List<DataHeightwaveRipple>();
 
@@ -40,10 +39,18 @@ namespace Stephens.Heightmesh
 
         private void Awake()
         {
-	        Mesh = CreateMesh();
+	        Mesh = new Mesh
+	        {
+		        // Use 32 bit index buffer to allow water grids larger than ~250x250
+		        indexFormat = IndexFormat.UInt32
+	        };
+	        
+	        GetComponent<MeshFilter>().mesh = Mesh;
+	        CreateMesh();
+	        _configData.OnValidated = OnConfigValidated;
 	        // if (_solver == null)
 	        // {
-		       //  _solver = ResolveSolver();
+	        //  _solver = ResolveSolver();
 	        // }
         }
         
@@ -76,6 +83,14 @@ namespace Stephens.Heightmesh
         private void OnDisable()
         {
 	        SystemHeightmesh.Instance.UnregisterHeightmesh(this);
+        }
+
+        private void OnConfigValidated()
+        {
+	        if (Application.isPlaying)
+	        {
+		        CreateMesh();
+	        }
         }
 
         #endregion INITIALIZATION
@@ -150,32 +165,34 @@ namespace Stephens.Heightmesh
 
         private Mesh CreateMesh()
         {
-	        Mesh = new Mesh
-	        {
-		        // Use 32 bit index buffer to allow water grids larger than ~250x250
-		        indexFormat = IndexFormat.UInt32
-	        };
+	        Mesh.Clear();
 
 	        // Create initial grid of vertex positions
-	        _originalVertices = new Vector3[_configData.SurfaceWidthPoints * _configData.SurfaceLengthPoints];
+	        float sizeWidth = _configData.Size;
+	        float sizeLength = _configData.Size;
+	        int surfaceWidthPoints = Mathf.Clamp
+		        (Mathf.FloorToInt(_configData.Size * _configData.Resolution), 1, Mathf.FloorToInt(_configData.Size));
+	        int surfaceLengthPoints = surfaceWidthPoints;
+	        
+	        _originalVertices = new Vector3[surfaceWidthPoints * surfaceLengthPoints];
 	        
 	        int index = 0;
-	        for (int i = 0; i < _configData.SurfaceWidthPoints; i++)
+	        for (int i = 0; i < surfaceWidthPoints; i++)
 	        {
-		        for (int j = 0; j < _configData.SurfaceLengthPoints; j++)
+		        for (int j = 0; j < surfaceLengthPoints; j++)
 		        {
 			        float x = MapValue(
 				        i, 
 				        0.0f, 
-				        _configData.SurfaceWidthPoints - 1, 
-				        -_configData.SurfaceActualWidth / 2.0f,
-				        _configData.SurfaceActualWidth / 2.0f);
+				        surfaceWidthPoints - 1, 
+				        -sizeWidth / 2.0f,
+				        sizeWidth / 2.0f);
 			        float z = MapValue(
 				        j, 
 				        0.0f, 
-				        _configData.SurfaceLengthPoints - 1, 
-				        -_configData.SurfaceActualLength / 2.0f, 
-				        _configData.SurfaceActualLength / 2.0f);
+				        surfaceLengthPoints - 1, 
+				        -sizeLength / 2.0f, 
+				        sizeLength / 2.0f);
 
 			        Vector3 pos = new Vector3(x, 0f, z);
 			        _originalVertices[index++] = pos;
@@ -183,42 +200,41 @@ namespace Stephens.Heightmesh
 	        }
 
 	        // Create an index buffer for the grid
-	        int[] indices = new int[(_configData.SurfaceWidthPoints - 1) * (_configData.SurfaceLengthPoints - 1) * 6];
+	        int[] indices = new int[(surfaceWidthPoints - 1) * (surfaceLengthPoints - 1) * 6];
 	        index = 0;
-	        for (int i = 0; i < _configData.SurfaceWidthPoints - 1; i++)
+	        for (int i = 0; i < surfaceWidthPoints - 1; i++)
 	        {
-		        for (int j = 0; j < _configData.SurfaceLengthPoints - 1; j++)
+		        for (int j = 0; j < surfaceLengthPoints - 1; j++)
 		        {
-			        int baseIndex = i * _configData.SurfaceLengthPoints + j;
+			        int baseIndex = i * surfaceLengthPoints + j;
 			        indices[index++] = baseIndex;
 			        indices[index++] = baseIndex + 1;
-			        indices[index++] = baseIndex + _configData.SurfaceLengthPoints + 1;
+			        indices[index++] = baseIndex + surfaceLengthPoints + 1;
 			        indices[index++] = baseIndex;
-			        indices[index++] = baseIndex + _configData.SurfaceLengthPoints + 1;
-			        indices[index++] = baseIndex + _configData.SurfaceLengthPoints;
+			        indices[index++] = baseIndex + surfaceLengthPoints + 1;
+			        indices[index++] = baseIndex + surfaceLengthPoints;
 		        }
 	        }
 
 	        Mesh.SetVertices(_originalVertices);
 	        Mesh.triangles = indices;
-	        Mesh.uv = GenerateUVs(_configData);
+	        Mesh.uv = GenerateUVs(surfaceWidthPoints, surfaceWidthPoints, surfaceLengthPoints);
 	        Mesh.RecalculateNormals();
-	        GetComponent<MeshFilter>().mesh = Mesh;
 
 	        return Mesh;
         }
 
-        private Vector2[] GenerateUVs(DataConfigHeightmesh data)
+        private Vector2[] GenerateUVs(int UVScale, int surfaceWidthPoints, int surfaceLengthPoints)
         {
-            Vector2[] uvs = new Vector2[(data.SurfaceWidthPoints * data.SurfaceLengthPoints)];
+            Vector2[] uvs = new Vector2[(surfaceWidthPoints * surfaceLengthPoints)];
         
             //always set one uv over n tiles than flip the uv and set it again
-            for (int x = 0; x <= data.SurfaceWidthPoints; x++)
+            for (int x = 0; x <= surfaceWidthPoints; x++)
             {
-                for (int z = 0; z <= data.SurfaceLengthPoints; z++)
+                for (int z = 0; z <= surfaceLengthPoints; z++)
                 {
-                    Vector2 vec = new Vector2((x / data.UVScale) % 2, (z / data.UVScale) % 2);
-                    int index = Index(x, z);
+                    Vector2 vec = new Vector2((x / UVScale) % 2, (z / UVScale) % 2);
+                    int index = Index(x, z, surfaceWidthPoints);
                     if (index < uvs.Length)
                     {
 	                    uvs[index] = new Vector2(vec.x <= 1 ? vec.x : 2 - vec.x, vec.y <= 1 ? vec.y : 2 - vec.y);
@@ -229,9 +245,9 @@ namespace Stephens.Heightmesh
             return uvs;
         }
         
-        private int Index(int x, int z)
+        private int Index(int x, int z, int surfaceWidthPoints)
         {
-            return x * (_configData.SurfaceWidthPoints) + z;
+            return x * surfaceWidthPoints + z;
         }
         
         internal static float MapValue(float refValue, float refMin, float refMax, float targetMin, float targetMax)

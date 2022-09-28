@@ -125,7 +125,7 @@ namespace Stephens.Heightmesh
         }
 
         /// <summary>
-        /// Heightmesh inputs are solved in a separate job. These require the array of vertices as well of the array of pixel data from
+        /// Heightmap inputs are solved in a separate job. These require the array of vertices as well of the array of pixel data from
         /// the target heightmesh.
         /// </summary>
         private void SolveMeshMapInputs(Heightmesh heightmesh, NativeArray<Vector3> vertices)
@@ -136,7 +136,7 @@ namespace Stephens.Heightmesh
                 {
                     Map = _dataHeightmap[i],
                     Vertices = vertices,
-                    MeshWidth = heightmesh.DataConfig.SurfaceActualWidth,
+                    MeshWidth = heightmesh.DataConfig.Size,
                     MeshPosition = heightmesh.transform.position,
                     Pixels = _dataConfigHeightmap[i].Pixels
                 };
@@ -149,8 +149,12 @@ namespace Stephens.Heightmesh
                             job.Execute(j);
                         }
                         break;
-                    case SimulationSolverMode.CPU_JobBurst: job.Schedule(vertices.Length, vertices.Length).Complete(); break;
-                    case SimulationSolverMode.CPU_JobBurstThreaded: job.Schedule(vertices.Length, 16).Complete(); break;
+                    case SimulationSolverMode.CPU_JobBurst: 
+                        job.Schedule(vertices.Length, vertices.Length).Complete(); 
+                        break;
+                    case SimulationSolverMode.CPU_JobBurstThreaded: 
+                        job.Schedule(vertices.Length, 16).Complete(); 
+                        break;
                 }
             }
         }
@@ -176,8 +180,12 @@ namespace Stephens.Heightmesh
                         job.Execute(j);
                     }
                     break;
-                case SimulationSolverMode.CPU_JobBurst: job.Schedule(vertices.Length, vertices.Length).Complete(); break;
-                case SimulationSolverMode.CPU_JobBurstThreaded: job.Schedule(vertices.Length, 16).Complete(); break;
+                case SimulationSolverMode.CPU_JobBurst: 
+                    job.Schedule(vertices.Length, vertices.Length).Complete();
+                    break;
+                case SimulationSolverMode.CPU_JobBurstThreaded: 
+                    job.Schedule(vertices.Length, 16).Complete(); 
+                    break;
             }
         }
 

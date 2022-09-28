@@ -54,7 +54,7 @@ namespace Stephens.Heightmesh
         private void Init()
         {
             // Create solver
-            _solver = ResolveSolver();
+            _solver = CreateSolver();
             
             // Resolve wave types into classes
             _inputs = new IHeightmeshInput[_inputData.Length];
@@ -73,7 +73,7 @@ namespace Stephens.Heightmesh
             _hasInit = true;
         }
         
-        private Solver ResolveSolver()
+        private Solver CreateSolver()
         {
             switch (_solveMode)
             {

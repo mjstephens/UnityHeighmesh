@@ -28,7 +28,7 @@ namespace Stephens.Heightmesh
                 0,
                 Mathf.Cos(direction)) * (1 - (_config.OmniDirectional ? 1 : 0));
 		        
-            _data = new DataWaveGerstner()
+            _data = new DataWaveGerstner
             {
                 Origin = _config.Origin,
                 Amplitude = _config.Amplitude,
@@ -173,6 +173,5 @@ namespace Stephens.Heightmesh
         }
 
         #endregion UTILITY
-        
     }
 }

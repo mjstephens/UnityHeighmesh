@@ -9162,9 +9162,7 @@ MonoBehaviour:
   _inputData:
   - {fileID: 11400000, guid: 2f3315a14d0bb4a52bfe6851d91a99a7, type: 2}
   - {fileID: 11400000, guid: 65609f6671d0b489db5a9b3c7e2ebdd4, type: 2}
-  _solveMode: 0
-  _simulationOffset: {x: 0, y: 0, z: 0}
-  _simulationYPosition: 0
+  _solveMode: 3
 --- !u!4 &1728520001
 Transform:
   m_ObjectHideFlags: 0

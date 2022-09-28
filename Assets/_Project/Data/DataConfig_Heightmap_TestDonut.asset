@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: DataConfig_Heightmap_TestDonut
   m_EditorClassIdentifier: 
   Source: {fileID: 2800000, guid: 0a6b55c975b914926adab548713b6320, type: 3}
-  ResolveMode: 2
+  ResolveMode: 0
   Invert: 0
   Speed: {x: 41.68, y: 0}
   Offset: {x: -6.71, y: 0}
-  Strength: 55.9
-  Opacity: 1
+  Strength: 45.59
+  Opacity: 0.676

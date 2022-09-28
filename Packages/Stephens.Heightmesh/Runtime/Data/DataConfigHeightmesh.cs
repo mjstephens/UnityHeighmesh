@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Stephens.Heightmesh
@@ -7,14 +8,26 @@ namespace Stephens.Heightmesh
         menuName = "Heightmesh/Heightmesh")]
     public class DataConfigHeightmesh : ScriptableObject
     {
+        #region DATA
+
         [Header("Quality")]
         [SerializeField] internal float UpdateRateRipples = 0.1f;
 
         [Header("Surface")]
-        [SerializeField] internal float UVScale = 100;
-        [SerializeField] internal float SurfaceActualWidth = 50; 
-        [SerializeField] internal float SurfaceActualLength = 50;
-        [SerializeField] internal int SurfaceWidthPoints = 100;
-        [SerializeField] internal int SurfaceLengthPoints = 100;
+        [SerializeField] internal float Size = 200;
+        [SerializeField] [Range(0.01f, 1)] internal float Resolution = 0.5f;
+        
+        #endregion DATA
+
+
+        #region VALIDATION
+
+        internal Action OnValidated;
+        private void OnValidate()
+        {
+            OnValidated?.Invoke();
+        }
+
+        #endregion VALIDATION
     }
 }
