@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: DataConfig_Heightmesh_ExampleHigh
   m_EditorClassIdentifier: 
   UpdateRateRipples: 0.1
-  Size: 208.8
-  Resolution: 0.122
+  Size: 235.39
+  Resolution: 0.216
+  UVScale: 1.35

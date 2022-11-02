@@ -16,20 +16,29 @@ namespace Stephens.Heightmesh
         #region VARIABLES
 
         [Header("Data")]
-        [SerializeField] private DataConfigHeightmesh _configData;
         [SerializeField] private DataConfigRipple _dataConfigRipples;
+
+        [Header("Neighbors")]
+        [SerializeField] private Heightmesh _neighborTop;
+        [SerializeField] private Heightmesh _neighborBottom;
 
         [Header("Ripple Waves")]
         [SerializeField] private Transform[] _waveSources;
 
         internal DataConfigHeightmesh DataConfig => _configData;
-        internal Mesh Mesh { get; private set; }
         internal Vector3[] OriginalVertices => _originalVertices;
+        internal Mesh Mesh { get; private set; }
 
-        //private Solver _solver;
+        private bool _debug;
+        private DataConfigHeightmesh _configData;
         private DataHeightmesh _data;
         private Vector3[] _originalVertices;
-        private static float _time;
+        private int _surfaceWidthPoints;
+        private int _surfaceLengthPoints;
+        private List<int> _topEdgeVertices = new List<int>();
+        private List<int> _bottomEdgeVertices  = new List<int>();
+        private List<int> _rightEdgeVertices  = new List<int>();	
+        private List<int> _leftEdgeVertices  = new List<int>();		// Bottom to top
         private readonly List<DataHeightwaveRipple> _dataRipples = new List<DataHeightwaveRipple>();
 
         #endregion VARIABLES
@@ -37,8 +46,11 @@ namespace Stephens.Heightmesh
         
         #region INITIALIZATION
 
-        private void Awake()
+        internal void Setup(DataConfigHeightmesh configData)
         {
+	        _configData = configData;
+	        _configData.OnValidated += OnConfigValidated;
+
 	        Mesh = new Mesh
 	        {
 		        // Use 32 bit index buffer to allow water grids larger than ~250x250
@@ -47,42 +59,11 @@ namespace Stephens.Heightmesh
 	        
 	        GetComponent<MeshFilter>().mesh = Mesh;
 	        CreateMesh();
-	        _configData.OnValidated = OnConfigValidated;
-	        // if (_solver == null)
-	        // {
-	        //  _solver = ResolveSolver();
-	        // }
         }
         
-        // private Solver ResolveSolver()
-        // {
-	       //  switch (_configData.Mode)
-	       //  {
-		      //   case SimulationSolverMode.CPU_Naive: 
-			     //    return new Solver_CPUNaive();
-			     //    break;
-		      //   case SimulationSolverMode.CPU_Job:
-		      //   case SimulationSolverMode.CPU_JobBurst:
-		      //   case SimulationSolverMode.CPU_JobBurstThreaded:
-			     //    return new Solver_CPUJob();
-			     //    break;
-		      //   case SimulationSolverMode.GPU_Compute:
-        //
-			     //    break;
-	       //  }
-	       //  
-	       //  // Fallback
-	       //  return new Solver_CPUNaive();
-        // }
-
-        private void OnEnable()
-        {
-	        SystemHeightmesh.Instance.RegisterHeightmesh(this);
-        }
-
         private void OnDisable()
         {
-	        SystemHeightmesh.Instance.UnregisterHeightmesh(this);
+	        _configData.OnValidated -= OnConfigValidated;
         }
 
         private void OnConfigValidated()
@@ -101,8 +82,54 @@ namespace Stephens.Heightmesh
 	    void ISolverResultsReceivable.DoReceiveSolverResults(List<Vector3> positions, List<Vector2> offsets)
         {
 	        Mesh.SetVertices(positions);
-	        Mesh.RecalculateNormals();
+	        DoCalculateMeshNormals();
+	        Mesh.RecalculateTangents();
+
+	        // vertices = Mesh.vertices;
+	        // normals = Mesh.normals;
         }
+
+	    private void DoCalculateMeshNormals()
+	    {
+		    Mesh.RecalculateNormals();
+		    // Vector3[] norms = Mesh.normals;
+		    // int count = Mesh.vertexCount;
+		    //
+		    // // Outer vertices need normals adjusted to prevent neighboring heighmeshes from having inconsistent lighting
+		    // for (int i = 0; i < count; i++)
+		    // {
+			   //  // Is this vertex on the edge?
+			   //  if (i < _surfaceLengthPoints ||				// left side
+			   //      i >= count - _surfaceLengthPoints ||	// right side
+			   //      i % _surfaceWidthPoints == 0 ||			// bottom
+			   //      (i + 1) % _surfaceWidthPoints == 0)		// top
+			   //  {
+				  //   norms[i] = Vector3.up;
+			   //  }
+		    // }
+		    //
+		    // Mesh.normals = norms;
+	    }
+	    
+	    Vector3[] vertices, normals;
+	    void OnDrawGizmos () 
+	    {
+		    if (Mesh == null || !_debug) {
+			    return;
+		    }
+
+		    Transform t = transform;
+		    Gizmos.color = Color.cyan;
+		    for (int i = 0; i < Mesh.vertexCount; i++)
+		    {
+			    Vector3 position = t.TransformPoint(vertices[i]);
+			    Gizmos.color = Color.cyan;
+			    Gizmos.DrawSphere(position, 1f);
+			    Gizmos.color = Color.green;
+			    Gizmos.DrawRay(position, normals[i] * 5f);
+		    }
+		    
+	    }
 
         #endregion SOLVE
 
@@ -170,27 +197,32 @@ namespace Stephens.Heightmesh
 	        // Create initial grid of vertex positions
 	        float sizeWidth = _configData.Size;
 	        float sizeLength = _configData.Size;
-	        int surfaceWidthPoints = Mathf.Clamp
-		        (Mathf.FloorToInt(_configData.Size * _configData.Resolution), 1, Mathf.FloorToInt(_configData.Size));
-	        int surfaceLengthPoints = surfaceWidthPoints;
+	        _surfaceWidthPoints = Mathf.Clamp
+		        (Mathf.FloorToInt(_configData.Size * _configData.Resolution), 2, Mathf.FloorToInt(_configData.Size));
+	        _surfaceWidthPoints = Mathf.Max(_surfaceWidthPoints, 2);
+	        _surfaceLengthPoints = _surfaceWidthPoints;	// May allow different width/height point densities in future
 	        
-	        _originalVertices = new Vector3[surfaceWidthPoints * surfaceLengthPoints];
+	        _originalVertices = new Vector3[_surfaceWidthPoints * _surfaceLengthPoints];
+	        _topEdgeVertices.Clear();
+	        _bottomEdgeVertices.Clear();
+	        _rightEdgeVertices.Clear();
+	        _leftEdgeVertices.Clear();
 	        
 	        int index = 0;
-	        for (int i = 0; i < surfaceWidthPoints; i++)
+	        for (int i = 0; i < _surfaceWidthPoints; i++)
 	        {
-		        for (int j = 0; j < surfaceLengthPoints; j++)
+		        for (int j = 0; j < _surfaceLengthPoints; j++)
 		        {
 			        float x = MapValue(
 				        i, 
 				        0.0f, 
-				        surfaceWidthPoints - 1, 
+				        _surfaceWidthPoints - 1, 
 				        -sizeWidth / 2.0f,
 				        sizeWidth / 2.0f);
 			        float z = MapValue(
 				        j, 
 				        0.0f, 
-				        surfaceLengthPoints - 1, 
+				        _surfaceLengthPoints - 1, 
 				        -sizeLength / 2.0f, 
 				        sizeLength / 2.0f);
 
@@ -200,33 +232,53 @@ namespace Stephens.Heightmesh
 	        }
 
 	        // Create an index buffer for the grid
-	        int[] indices = new int[(surfaceWidthPoints - 1) * (surfaceLengthPoints - 1) * 6];
+	        int[] indices = new int[(_surfaceWidthPoints - 1) * (_surfaceLengthPoints - 1) * 6];
 	        index = 0;
-	        for (int i = 0; i < surfaceWidthPoints - 1; i++)
+	        for (int i = 0; i < _surfaceWidthPoints - 1; i++)
 	        {
-		        for (int j = 0; j < surfaceLengthPoints - 1; j++)
+		        for (int j = 0; j < _surfaceLengthPoints - 1; j++)
 		        {
-			        int baseIndex = i * surfaceLengthPoints + j;
+			        int baseIndex = i * _surfaceLengthPoints + j;
 			        indices[index++] = baseIndex;
 			        indices[index++] = baseIndex + 1;
-			        indices[index++] = baseIndex + surfaceLengthPoints + 1;
+			        indices[index++] = baseIndex + _surfaceLengthPoints + 1;
 			        indices[index++] = baseIndex;
-			        indices[index++] = baseIndex + surfaceLengthPoints + 1;
-			        indices[index++] = baseIndex + surfaceLengthPoints;
+			        indices[index++] = baseIndex + _surfaceLengthPoints + 1;
+			        indices[index++] = baseIndex + _surfaceLengthPoints;
 		        }
 	        }
 
 	        Mesh.SetVertices(_originalVertices);
 	        Mesh.triangles = indices;
-	        Mesh.uv = GenerateUVs(surfaceWidthPoints, surfaceWidthPoints, surfaceLengthPoints);
-	        Mesh.RecalculateNormals();
+	        Mesh.uv = GenerateUVs(_surfaceWidthPoints, _surfaceWidthPoints, _surfaceLengthPoints);
+	        
+	        // Outer vertices need normals adjusted to prevent neighboring heighmeshes from having inconsistent lighting
+	        for (int i = 0; i < _originalVertices.Length; i++)
+	        {
+				if (i < _surfaceLengthPoints)
+				{
+					_leftEdgeVertices.Add(i);
+				}						
+	            else if (i >= _originalVertices.Length - _surfaceLengthPoints)
+				{
+					_rightEdgeVertices.Add(i);
+				}
+				else if (i % _surfaceWidthPoints == 0)
+				{
+					_bottomEdgeVertices.Add(i);
+				}
+				else if ((i + 1) % _surfaceWidthPoints == 0)
+		        {
+					 _topEdgeVertices.Add(i);
+		        }
+	        }
 
 	        return Mesh;
         }
 
         private Vector2[] GenerateUVs(int UVScale, int surfaceWidthPoints, int surfaceLengthPoints)
         {
-            Vector2[] uvs = new Vector2[(surfaceWidthPoints * surfaceLengthPoints)];
+            Vector2[] uvs = new Vector2[surfaceWidthPoints * surfaceLengthPoints];
         
             //always set one uv over n tiles than flip the uv and set it again
             for (int x = 0; x <= surfaceWidthPoints; x++)

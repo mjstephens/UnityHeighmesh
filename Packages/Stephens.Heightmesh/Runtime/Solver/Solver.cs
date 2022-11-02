@@ -19,6 +19,9 @@ namespace Stephens.Heightmesh
         protected readonly List<DataConfigHeightmap> _dataConfigHeightmap = new List<DataConfigHeightmap>();
         protected readonly List<DataHeightmap> _dataHeightmap = new List<DataHeightmap>();
         protected int _mapCount;
+        protected static int _solvedSin;
+        protected static int _solvedGerstner;
+        protected static int _solvedNoise;
 
         #endregion VARIABLES
 
@@ -35,6 +38,13 @@ namespace Stephens.Heightmesh
 
         #region SOLVE
 
+        internal static void Reset()
+        {
+            _solvedSin = 0;
+            _solvedGerstner = 0;
+            _solvedNoise = 0;
+        }
+        
         /// <summary>
         /// 
         /// </summary>

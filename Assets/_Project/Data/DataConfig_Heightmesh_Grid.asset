@@ -9,15 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9f96da85fd84e278030d135746facb0, type: 3}
-  m_Name: DataConfig_WaveGerstner_1
+  m_Script: {fileID: 11500000, guid: d6e51458c54f46e0b9fad9df72cd249b, type: 3}
+  m_Name: DataConfig_Heightmesh_Grid
   m_EditorClassIdentifier: 
-  Opacity: 1
-  Amplitude: 0
-  Wavelength: 57.7
-  Direction: -47.8
-  Speed: 1.8
-  WorldAnchored: 1
-  PeakSharpness: 0.625
-  Origin: {x: -13.88, y: 0, z: -11.25}
-  OmniDirectional: 1
+  UpdateRateRipples: 0.1
+  Size: 83.61
+  Resolution: 0.198
+  UVScale: 1.35

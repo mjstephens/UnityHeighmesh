@@ -87,11 +87,11 @@ namespace Stephens.Heightmesh
                 XZOffsets = _vertexOffsets,
                 AnchorPosition = anchorPosition,
                 SinWaveData = sinWaveData,
-                SinWaveCount = Data.DataSin.Length,
+                SinWaveCount = Data.CountSin,
                 GerstnerWaveData = gerstnerWaveData,
-                GerstnerWaveCount = Data.DataGerstner.Length,
+                GerstnerWaveCount = Data.CountGerstner,
                 NoiseData = noiseData,
-                NoiseCount = Data.DataNoise.Length,
+                NoiseCount = Data.CountNoise,
                 SimulationOffset = simOffset
             };
             
@@ -216,7 +216,12 @@ namespace Stephens.Heightmesh
                 
                 if (SinWaveCount > 0)
                 {
-                    vertex.y += SolveSinWaves(vertex, AnchorPosition, SinWaveData, SinWaveCount, SimulationOffset);
+                    vertex.y += SolveSinWaves(
+                        vertex,
+                        AnchorPosition,
+                        SinWaveData,
+                        SinWaveCount, 
+                        SimulationOffset);
                 }
 
                 if (GerstnerWaveCount > 0)
@@ -237,7 +242,12 @@ namespace Stephens.Heightmesh
                 
                 if (NoiseCount > 0)
                 {
-                    vertex.y += SolveNoise(vertex, AnchorPosition, NoiseData, NoiseCount, SimulationOffset);
+                    vertex.y += SolveNoise(
+                        vertex, 
+                        AnchorPosition,
+                        NoiseData, 
+                        NoiseCount, 
+                        SimulationOffset);
                 }
 
                 Vertices[index] = vertex;

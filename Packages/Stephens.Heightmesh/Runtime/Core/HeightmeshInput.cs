@@ -13,7 +13,7 @@ namespace Stephens.Heightmesh
         #region VARIABLES
 
         internal TData Data => _data;
-        
+
         protected TData _data;
         protected readonly TDataConfig _config;
 

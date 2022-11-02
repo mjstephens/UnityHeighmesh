@@ -80,7 +80,7 @@ namespace Stephens.Buoyancy
                 _surfaceObjectPositions[i] = new Vector3(_surfaceObjects[i].Position.x, 0, _surfaceObjects[i].Position.z);
             }
             
-            SystemHeightmesh.Instance.Solve(_surfaceObjectPositions.ToArray(), Vector3.zero, this, true);
+            //SystemHeightmesh.Instance.Solve(_surfaceObjectPositions.ToArray(), Vector3.zero, this, true);
         }
 
         private bool falg;

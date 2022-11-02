@@ -122,10 +122,10 @@ namespace Stephens.Heightmesh
             }
             
             //  calculate wind direction - TODO - currently radians
-            Vector3 windOmniInput = CustomMultiply(omni - origin, data.OmniDirection);
+            Vector3 windOmniInput = CustomMultiply(CustomSubtract(omni, origin), data.OmniDirection);
             Vector3 windDir = data.WindDirectionInput + windOmniInput;
             windDir = CustomNormalize(windDir);
-            float dir = Vector3.Dot(windDir, omni - (origin * data.OmniDirection));
+            float dir = Vector3.Dot(windDir, CustomSubtract(omni, (origin * data.OmniDirection)));
 
             ////////////////////////////position output calculations/////////////////////////
             float calc = dir * data.Wavelength - data.Offset; // the wave calculation
@@ -170,6 +170,11 @@ namespace Stephens.Heightmesh
         private static Vector3 CustomMultiply(Vector3 v1, float f)
         {
             return new Vector3(v1.x * f, v1.y * f, v1.z * f);
+        }
+
+        private static Vector3 CustomSubtract(Vector3 v1, Vector3 v2)
+        {
+            return new Vector3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
         }
 
         #endregion UTILITY

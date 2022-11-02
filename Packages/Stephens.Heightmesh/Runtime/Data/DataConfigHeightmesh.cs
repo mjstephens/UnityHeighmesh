@@ -16,6 +16,7 @@ namespace Stephens.Heightmesh
         [Header("Surface")]
         [SerializeField] internal float Size = 200;
         [SerializeField] [Range(0.01f, 1)] internal float Resolution = 0.5f;
+        [SerializeField] internal float UVScale = 1f;
         
         #endregion DATA
 
@@ -25,6 +26,7 @@ namespace Stephens.Heightmesh
         internal Action OnValidated;
         private void OnValidate()
         {
+            Size = Mathf.Max(Size, 1);
             OnValidated?.Invoke();
         }
 

@@ -9,6 +9,8 @@ public class WaveUIController : MonoBehaviour
 {
     #region VARIABLES
 
+    [SerializeField] private SystemHeightmesh _hm;
+    
     [SerializeField] private Slider _gerstner1Amplitude;
     [SerializeField] private Slider _gerstner1Length;
     [SerializeField] private Slider _gerstner1Speed;
@@ -31,8 +33,6 @@ public class WaveUIController : MonoBehaviour
     
     [SerializeField] private Button _reset;
 
-
-    private SystemHeightmesh _hm;
     private int _noiseIndex;
 
     #endregion VARIABLES
@@ -42,14 +42,13 @@ public class WaveUIController : MonoBehaviour
 
     private void Awake()
     {
-        _hm = SystemHeightmesh.Instance;
         _noiseToggle.onClick.AddListener(OnNoiseToggle);
         _reset.onClick.AddListener(OnReset);
     }
 
     private void Update()
     {
-        if (_hm.Inputs.Length != 4)
+        if (_hm.Inputs.Count != 4)
             return;
         
         (_hm.Inputs[0] as DataConfigWaveGerstner).Amplitude = _gerstner1Amplitude.value;

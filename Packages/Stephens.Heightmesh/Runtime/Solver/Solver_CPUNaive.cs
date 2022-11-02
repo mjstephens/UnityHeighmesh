@@ -41,9 +41,9 @@ namespace Stephens.Heightmesh
                 SolvedOffsets.Add(Vector2.zero);
             }
             
-            int sinCount = Data.DataSin.Length;
-            int gerstnerCount = Data.DataGerstner.Length;
-            int noiseCount = Data.DataNoise.Length;
+            int sinCount = Data.CountSin;
+            int gerstnerCount = Data.CountGerstner;
+            int noiseCount = Data.CountNoise;
 
             // We iterate and solve for every provided position
             for (int i = 0; i < SolvedPositions.Count; i++)
