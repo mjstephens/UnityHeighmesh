@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: DataConfig_WaveSin_1
   m_EditorClassIdentifier: 
   Opacity: 1
-  Amplitude: 8.89
-  Wavelength: 11.8
-  Direction: 94.92
-  Speed: 1
+  Amplitude: 4.4
+  Wavelength: 37.8
+  Direction: 94
+  Speed: 6.98
   WorldAnchored: 1

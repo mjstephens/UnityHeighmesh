@@ -38,10 +38,8 @@ namespace Stephens.Heightmesh
             Vector3 vertex, 
             DataWaveSin data)
         {
-            float k = 6.28318f / data.Wavelength;
-            float w = k * data.Offset;
-            Vector3 dir = (data.Direction * vertex) ;
-            return data.Amplitude * Mathf.Sin((dir.x + dir.y + dir.z) * k * w);
+            Vector3 dir = data.Direction * vertex;
+            return (Mathf.Sin((dir * data.Wavelength).z + data.Offset) * data.Amplitude) * data.Opacity;
         }
 
         #endregion SOLVE
